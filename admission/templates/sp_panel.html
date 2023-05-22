@@ -1,0 +1,258 @@
+{% extends 'panel_base.html' %}
+{% load static %}
+
+{% block title %} SP Panel {% endblock %}
+
+{% block left-panel %}
+    <div class="card mt-2 rounded-0" style="position: sticky; top: 10%;">
+        <div class="card-header">
+            <h5><b>Pending Candidates</b></h5>
+        </div>
+        <div class="card-body p-1">
+    
+            <select class="custom-select form-select mt-2" size="16" aria-label="size 3 select example" required>
+                {% for applicant in pending_applicants %}
+                <option onclick="copyText(this);" ondblclick="doubleClick(this);" data-url="/view_application/" value="{{applicant.application_number}}" >{{applicant.application_number}}-{{applicant.applied_program}}</option>
+                {% endfor %}
+    
+            </select>
+    
+            <span class="tooltiptext d-none text-center text-success" id="mytooltip">Application Number Copied</span>
+    
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    
+    {% if application_details %}
+        <!--Absent Modal -->
+        <div class="modal fade" id="absentModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <input type="text" value="true" id="flag123" readonly hidden> <!--DO NOT DELETE-->
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Confirmation!</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Kindly choose the below option as per the status of the candidate.
+                    </div>
+                    <div class="modal-footer">
+                        <form method="POST">
+                            {% csrf_token %}
+                            <input type="text" name="application_number" value="{{ application_details.application_number }}" hidden readonly>
+                            <input type="text" name="reviewer_id" value="{{ request.user }}" hidden readonly>
+                            <button type="submit" name="absent-btn" value="true" class="btn btn-danger">Mark Absent</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- ABSENT MODAL END -->
+
+        <div class="card shadow mt-2 rounded-0">
+            <div class="card-header card-custom">
+                <div class="d-flex justify-content-between align-items-center">
+
+                    <h3 class="fw-bold">{{ application_details.application_number }}</h3>
+                    <h3 class="fw-bold">{{application_details.first_name}} {% if application_details.middle_name %}{{application_details.middle_name}}{% endif %} {% if application_details.last_name %}{{application_details.last_name}}{% endif %}</h3>
+
+                </div>
+            </div>
+
+            <div class="card-body p-0 mt-3">
+                <div class="container-fluid">
+
+
+
+                    <div class="row mb-2">
+
+                        <div class="col-12">
+                            <p>PERSONAL DETAILS</p>
+                        </div>
+
+                        <div class="col-md-6 d-flex">
+                            <h6 class="pe-3">DOB: <b class="fs-5">{{ application_details.dob }}</b></h6>
+
+
+                        </div>
+                        <div class="col-md-6 d-flex">
+                            <h6 class="pe-3">State of Study: <b class="fs-5"> {{ application_details.state_of_board }}</b> </h6>
+
+
+                        </div>
+                    </div>
+
+                    <div class="row mb-2">
+
+                        <div class="col-12">
+                            <p>COURSE DETAILS</p>
+                        </div>
+
+
+                        <div class="col-12">
+                            <table class="table">
+                                <tr>
+                                    <td>
+                                        <h6>Course Opted:</h6>
+                                    </td>
+                                    <td><b class="fs-5">{{ application_details.applied_program }}</b></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <h6>Subjects Studied:</h6>
+                                    </td>
+                                    <td><b class="fs-5">{{application_details.qualification_details.title }}</b> </td>
+                                </tr>
+                            </table>
+                        </div>
+
+
+
+                    </div>
+
+                    <div class="row">
+
+                        <div class="col-12">
+                            <p>ACADEMIC DETAILS</p>
+                        </div>
+
+                        <div class="col-md-12">
+                            <table class="table table-bordered">
+                                <tr>
+                                    <td>
+                                        <h6>(X) YOP : <b class="fs-5">{{ application_details.tenth_year }}</b></h6>
+                                        <h6>(X) % : <b class="fs-5">{{ application_details.tenth_percentage }}</b></h6>
+                                    </td>
+                                    <td>
+                                        <h6>(XII) YOP : <b class="fs-5">{% if not application_details.course_category == 'PG' %} {{ application_details.year_of_passing }} {% else %} {{ application_details.twelfth_year }} {% endif %}</b></h6>
+                                        <h6>(XII) % : <b class="fs-5 twelfth_percentage">{% if not application_details.course_category == 'PG' %} {{ application_details.aggregrate_percentage_including_language_for_UG }} {% else %} {{ application_details.twelfth_percentage }} {% endif %}</b></h6>
+                                    </td>
+                                    <td>
+                                        <h6>(UG) YOP : <b class="fs-5">{% if application_details.course_category == 'PG' %}{{ application_details.year_of_passing }}{% endif %}</b></h6>
+                                        <h6>(UG) % : <b class="fs-5">{% if application_details.course_category == 'PG' %}{{ application_details.aggregrate_percentage_including_language_for_PG }}{% endif %}</b></h6>
+                                    </td>
+                                    
+                                </tr>
+                                <tr>
+                                    <td colspan="2">
+                                        <h6>Year Gap for UG Applicants: <b class="fs-5">{{year_gap}}</b> </h6>
+                                    </td>
+                                    <td colspan="2">
+                                        <h6>Qly. Exm. Result : {{ application_details.result_status }}</h6>
+                                    </td>
+                                    
+                                </tr>
+                                <tr>
+                                    <td colspan="3">
+                                        <h6>Name of institution: <b class="fs-6">{{application_details.name_of_institution}}</b></h6>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">
+                                        <h6>Board / University: <b class="fs-6">{{application_details.other_board_or_university}}</b></h6>
+                                    </td>
+                                    <td colspan="2">
+                                        <h6>(UG) Prog. : <b class="fs-6">{{ application_details.qualifying_exam }}</b></h6>
+                                    </td>
+
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row">
+
+                        <div class="col-md-12">
+                            <p>REMARKS </p>
+                        </div>
+
+                        <div class="col-md-12">
+                            <table class="table">
+                                <tr>
+                                    <th>
+                                        <h6 class="fw-bold">Status<span class="text-danger">*</span>:</h6>
+                                    </th>
+                                    <td>
+                                        <form action="" method="post">
+                                            {% csrf_token %}
+                                            <input type="text" name="appno" value="{{application_details.application_number}}" hidden readonly>
+                                            <input type="text" name="twelfth_percentage" id="updated_twelfth_percentage" value="{{ application_details.aggregrate_percentage_including_language_for_UG }}" class="updated_twelfth_percentage" hidden>
+
+                                            <select class="form-select w-100" name="scrutiny_status" id="" required>
+
+                                                <option value="" selected>Choose the status</option>
+                                                <option value="SP">Scrutiny Pending</option>
+                                                <option value="SC">Scrutiny Completed</option>
+
+                                            </select>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="card-footer">
+                <div class="float-end">
+                    <button type="submit" class="btn btn-success" name="submit-btn">Save changes</button>
+                    <button class="btn btn-danger rounded-0" data-bs-toggle="modal" data-bs-target="#absentModal">Absent</button>
+                </div>
+            
+            </div>
+        </form>
+        </div>
+    {% else %}
+    <div class="alert alert-success mt-2" role="alert">
+        <input type="text" value="false" id="flag123" readonly hidden> <!--DO NOT DELETE-->
+        <h4 class="alert-heading">Action Required!</h4>
+        <p>The candidates are queued to the panel. The application numbers are displayed on your left side.</p>
+        <hr class="border-secondary">
+        <p class="mb-0">Select the application number and proceed to load the data into the panel.</p>
+    </div>
+    {% endif %}
+
+{% endblock %}
+
+{% block right-panel %}
+    <div class="card mt-2 rounded-0" style="position: sticky; top: 10%;">
+        <div class="card-header">
+            <h5><b>Completed Candidates</b></h5>
+        </div>
+
+        <div class="card-body">
+
+            <form action="">
+                {% csrf_token %}
+                <select class="form-select" id="stud-list" size="13" aria-label="size 3 select example"
+                    required>
+
+                    {% for applicant in completed_applicants %}
+                    <option class="{% if applicant.application_remark == 'SP-ABSENT'%}text-danger{% endif %}" onclick="copyText(this);" ondblclick="doubleClick(this);"
+                    data-url="/office_dashboard/" value="{{applicant.application_number}}">{{applicant.application_number}}-{{applicant.applied_program}}</option>
+                    {% endfor %}
+
+                </select>
+        </div>
+
+        <div class="card-footer">
+            <div class="d-flex ">
+                <h6 style="color:red">●</h6>
+                <h6 style="padding-left: 10px; font-size: 15px;">Absent</h6>
+            </div>
+            <!-- <div class="d-flex ">
+                <h6 style="color:green">●</h6>
+                <h6 style="padding-left: 10px; font-size: 15px;">Completed</h6>
+            </div> -->
+            
+        </div>
+
+        <div>
+            
+        </div>
+
+    </div>
+{% endblock %}

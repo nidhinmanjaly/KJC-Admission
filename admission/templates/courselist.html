@@ -1,0 +1,302 @@
+<!-- This is for the listing of course when we click the interview card. 
+    This is applicable for Father's view...... -->
+
+    {% extends 'principal_dashboard.html' %}
+    {% load custom_tags %}
+
+    {% block title %} Courses wise list {% endblock %}
+    <!--End-Title-->
+    
+    <!--Main-->
+    {% block maincontent %}
+    <style>
+  
+        #selection-status{
+          display: grid;
+          gap: 1em; 
+        }
+        
+        #selection-status label {
+          display: inline-block;
+          border-radius: 10px;
+          text-align: center;
+          height: 2em;
+          width: 100%;
+          font-size: 0.8em;
+          background-color: #f9f9f9;
+          box-shadow: 2px 2px 5px #bebebe;
+          position: relative;
+        }
+        #selection-status label .selectstatus{
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          border-radius: inherit;
+        }
+        
+        #selection-status input[type="radio"] {
+            opacity: 0.01;
+            z-index: 100;  
+        }
+        /* Style for the selected radio button */
+        label input[value="SELECTED"]:checked + .selectstatus {
+          background-color:  rgba(25, 170, 25, 0.836);
+          color: white;
+        }
+        
+        /* Style for the not selected radio button */
+        label input[value="NOT_SELECTED"]:checked + .selectstatus {
+          background-color: rgba(219, 22, 22, 0.836);
+          color: white;
+        }
+        
+        /* Style for the waiting list radio button */
+        label input[value="WAITING_LIST"]:checked + .selectstatus {
+          background-color: rgba(255, 151, 55, 0.953);
+          color: white;
+        }
+
+
+        .status{
+          background-color: rgb(228, 228, 228);
+          display: grid;
+          width: 100%;
+          padding: 0.5em;
+          gap: 0.5em;
+          border-radius: 7px;
+        }
+        span {
+          font-weight: 600;
+          font-size: 0.9em;
+        }
+
+    </style>
+
+
+    <main id="main" class="main">
+    
+        <div class="container-fluid"  style="margin-bottom: 4em;">
+            <div class="row">
+                <div class="col-md-15">
+                    <div class="d-flex justify-content-between">
+                        <h2 id="interview_id">{{interview_id}}</h2>
+                    </div>
+    
+                    <div class="d-panels">
+
+                        <!-- Give the for loop condition to iterate through courses opted by the student 
+                            or the courses handled by all the panels within a specific interview -->
+
+                          {% for course, course_details in coursewise_dict.items %}
+                            <div class="card mb-4">
+                              <div class="card-header bg-custom"
+                                  data-bs-toggle="collapse" data-bs-target="#card-panel-details{{ forloop.counter }}"
+                                  aria-expanded="false" aria-controls="collapse_user_creataion" style="min-height: 4rem;z-index:20;background-color: #fbfbfb;position: sticky;top: calc(60px);display: grid;padding: 0.7em;" onclick="makeSticky(`{{ forloop.counter0 }}`);">
+                                  <div >
+                                    <h5 id="panelId" style="float:left">{{course}}</h5>
+                                    <h6 class="text-secondary" style="position: absolute; right: 35px;">Intake: <span id="{% human_readable_text course %}-intake">-</span> | Admitted: <span id="{% human_readable_text course %}-admitted">-</span> | Allotted: <span id="{% human_readable_text course %}-allotted">-</span> | Vacant: <span id="{% human_readable_text course %}-vacant">-</span></h6>
+                                    <i class="fa-solid fa-chevron-down" style="float:right"></i>
+                                  </div>
+                                  <div class="card-footer pb-0 bg-light">
+                                      <div class="details">
+                                          <h6 class="text-success">Total Students: <span id="{% human_readable_text course %}-total_students">{{course_details|length}}</span> | Selected: <span id="{% human_readable_text course %}-selected">-</span> | Not Selected: <span id="{% human_readable_text course %}-not_selected">-</span> | Waiting List: <span id="{% human_readable_text course %}-waiting_list">-</span> | Course Change: <span id="{% human_readable_text course %}-course_change">-</span> | Pending: <span id="{% human_readable_text course %}-pending">-</span> </h6>
+                                      </div>
+                                  </div>
+                              </div>
+                            
+                              <div class="collapse" id="card-panel-details{{ forloop.counter }}">
+      
+                                  <div class="card-body">
+                                      <table id="finalreport_table" class="table table-striped">
+                                          <thead>
+                                              <tr>
+                          
+                                                  <th>Details</th>
+                                                  <th>Marks %</th>
+                                                  <th>Remark1</th>
+                                                  <th>Remark2</th>
+                                                  <th>Selection Status</th>
+                                              </tr>
+                                          </thead>
+                                          <tbody style="margin-bottom: 4em">
+                                          {% for student, details in course_details.items %}
+                                            <tr>
+                          
+                                              <td>{{ student.application_number }}<br><br>{{ student.applied_program }}<br><br>&#13;&#10;&#13;&#10;{{ student.first_name }} {% if student.middle_name %}{{ student.middle_name }}{% endif %} {% if student.last_name %}{{ student.last_name }}{% endif %} <br><br><span>&#13;&#10;&#13;&#10;DoB:</span> {{ student.dob }} <br><span>&#13;&#10;StateOfBoard:</span> {{ student.state_of_board }} <br><span>&#13;&#10;Nationality:</span> {{ student.nationality }} <br></td>
+                          
+                                              <td><span>X :</span> {{ student.tenth_percentage }}% ({{ student.tenth_year }})<br><span>&#13;&#10;XII :</span> {% if not student.course_category == 'PG' %} {{ student.aggregrate_percentage_including_language_for_UG }} {% else %} {{ student.twelfth_percentage }} {% endif %}% ({% if not student.course_category == 'PG' %} {{ student.year_of_passing }} {% else %} {{ student.twelfth_year }} {% endif %})<br><span>&#13;&#10;UG :</span> {% if student.course_category == 'PG' %}{{ student.aggregrate_percentage_including_language_for_PG }}{% endif %}% ({% if student.course_category == 'PG' %}{{ student.year_of_passing }}{% endif %})<br><br>&#13;&#10;&#13;&#10;{{ student.result_status}}<br><br><span>&#13;&#10;&#13;&#10;Previous Institution:</span> {{ student.name_of_institution }}</td>
+                          
+                                            {% for remark in details.remarks %}  
+                                              <td><span>Reviewer ID:</span>{{ remark.reviewer_id}} <br> <span>&#13;&#10;Mode of Education:</span>{{ remark.mode_of_education}}<br><span>&#13;&#10;Sec. Lang.:</span>{{ remark.second_language}}<br><span>&#13;&#10;Cocurricular activities:</span>{{ remark.cocurricular_activities}}<br><span>&#13;&#10;Subject Knowledge:</span>{{ remark.subject_knowledge}}<br><span>&#13;&#10;Attitude:</span>{{ remark.attitude}}<br><span>&#13;&#10;Communication:</span>{{ remark.communication}}<br><br><span>&#13;&#10;&#13;&#10;Remark:</span>{{ remark.remarks}}<br><span>&#13;&#10;Notes for admission office:</span>{{ remark.notes_for_admission_office}}<br><br><span>&#13;&#10;&#13;&#10;Interview score:</span>{{ remark.interview_score}}<br><span>&#13;&#10;Activity score:</span>{{ remark.activity_score}}</td>
+                                            {% endfor %}
+
+                                            {% if details.remarks|length == 0%}
+                                              <td></td>
+                                              <td></td>
+                                            {% elif details.remarks|length < 2%}
+                                              <td></td>
+                                            {% endif %}
+                                              
+                                              <td>
+                                                <form method="post" id="selection-status">
+                                                  {% csrf_token %}
+                                                  <span style="display: none;">
+                                                    {% if student.selection_status == "PENDING" %} sel-pending {% endif %}
+                                                    {% if student.selection_status == "SELECTED" %} sel-selected {% endif %}
+                                                    {% if student.selection_status == "NOT_SELECTED" %} sel-not-selected {% endif %}
+                                                    {% if student.selection_status == "WAITING_LIST" %} sel-waiting-list {% endif %}
+                                                  </span>
+                                                  <div class="status">
+                                                      <label><input type="radio" id="{{ student.application_number }}-selects" name="selection_radio_group" data-applicant="{{ student.application_number }}" data-course="{{course}}" class="status_select" value="SELECTED" onchange="changeStatus(this)" {% if student.selection_status == "SELECTED" %} checked {% endif %}><div class="selectstatus">Selected</div></label>
+                                                      
+                                                      <label><input type="radio" id="{{ student.application_number }}-rejects" name="selection_radio_group" data-applicant="{{ student.application_number }}" data-course="{{course}}" class="status_select" value="NOT_SELECTED" onchange="changeStatus(this)" {% if student.selection_status == "NOT_SELECTED" %} checked {% endif %}><div class="selectstatus">Not Selected</div></label>
+                                                      
+                                                      <label><input type="radio" id="{{ student.application_number }}-waits" name="selection_radio_group" data-applicant="{{ student.application_number }}" data-course="{{course}}" class="status_select" value="WAITING_LIST" onchange="changeStatus(this)" {% if student.selection_status == "WAITING_LIST" %} checked {% endif %}><div class="selectstatus">Waiting List</div></label>
+                                                  </div>
+                                                  <select name="course_select" id="{{ student.application_number }}-course_select" class="form-control text-center course_select" multiselect-search="true" multiselect-select-all="false" multiselect-max-items="1" onChange="changeCourse(this.options[this.selectedIndex])">
+                                                    <option value="" data-applicant="{{ student.application_number }}" selected>--CourseChange--</option>
+                                                    
+                                                    {% for program in programs %}
+                                                      <option value="{{program}}" class="{% human_readable_text program %}-available_seats2" data-applicant="{{ student.application_number }}" {% if student.course_allotted %}{% if student.course_allotted == program %} selected {% endif %} {% else %} {% if student.applied_program == program %} selected {% endif %} {% endif %}>{{program}}</option>
+                                                    {% endfor %}
+                                                  </select>
+                                                  {% if details.reviewers_indicator.selection|lower == 'y' %}
+                                                  <div class="text-center" style="color: green;">
+                                                    <span>RECOMMENDED</span><br>{{ details.reviewers_indicator.reccomended_by }}<br>{{ details.reviewers_indicator.reference }}<br>
+                                                  </div>
+                                                  {% elif details.reviewers_indicator.selection|lower == 'n' %}
+                                                  <div class="text-center" style="color: red;">
+                                                    <span>NOT TO BE SELECTED</span><br>{{ details.reviewers_indicator.reccomended_by }}<br>{{ details.reviewers_indicator.reference }}<br>
+                                                  </div>
+                                                  {% endif %}
+                                                </form>
+                                                  
+                                              </td>
+                                            </tr>                          
+                                            {% endfor %}
+                                          </tbody>
+                                      </table>
+                                  </div>
+              
+                              </div>
+                            </div>
+                            {% endfor %}  
+                    </div>
+                </div>
+    
+            </div>
+        </div>
+    
+    </main>
+    
+    
+  <script>
+    $(document).ready(function () {
+      $('.table').DataTable(
+        {
+          paging: false,
+        }
+      );
+    });
+
+    function changeStatus(data){
+      var status = data.getAttribute("value");
+      var application_no = data.getAttribute("data-applicant");
+      var prog = data.getAttribute("data-course").replace(/[^a-zA-Z0-9 ]/g, "").replace(/ /g,"_");
+
+      // console.log(application_no)
+      
+      if(status == "NOT_SELECTED" || status == "WAITING_LIST") {
+        $(`#${application_no}-course_select`).val('');
+      }
+      post_data = {
+        csrfmiddlewaretoken: "{{ csrf_token }}",
+        application_no: application_no,
+        status: status
+      }
+      $.ajax({
+        type: 'POST',
+        url: "{% url 'set_selection_status' %}",
+        data: post_data
+      })
+    }
+
+    function changeCourse(data){
+      var alloted_course = data.getAttribute("value");
+      var application_no = data.getAttribute("data-applicant");
+
+      if (alloted_course) {
+        $(`#${application_no}-selects`).prop('checked', true);
+      }
+
+      post_data = {
+        csrfmiddlewaretoken: "{{ csrf_token }}",
+        application_no: application_no,
+        alloted_course: alloted_course,
+        interview_id: '{{interview_id}}'
+      }
+      $.ajax({
+        type: 'POST',
+        url: "{% url 'set_allotted_course' %}",
+        data: post_data
+      })
+    }
+
+    function updateData() {
+        post_data = {
+          csrfmiddlewaretoken: "{{ csrf_token }}",
+          interview_id: '{{interview_id}}'
+        }
+
+        $.ajax({
+            url: "{% url 'get_updated_allot_details' %}",
+            data: post_data,
+            type: 'POST',
+            dataType: 'json',
+            success: function(response) {
+                var data = response.data;
+                for (var i = 0; i < data.length; i++) {
+                    // html += '<p>' + data[i].name + ': ' + data[i].value + '</p>';
+
+                    var prog = data[i].program.replace(/[^a-zA-Z0-9 ]/g, "").replace(/ /g,"_");
+
+                    $(`.${prog}-available_seats2`).text(`${data[i].program} (${data[i].intake - data[i].allotted - data[i].admitted})`);
+                    $(`#${prog}-selected`).text(data[i].selected);
+                    $(`#${prog}-not_selected`).text(data[i].not_selected);
+                    $(`#${prog}-pending`).text(data[i].pending);
+                    $(`#${prog}-waiting_list`).text(data[i].waiting_list);
+                    $(`#${prog}-course_change`).text(data[i].course_change);
+
+                    $(`#${prog}-intake`).text(data[i].intake);
+                    $(`#${prog}-allotted`).text(data[i].allotted);
+                    $(`#${prog}-admitted`).text(data[i].admitted);
+                    $(`#${prog}-vacant`).text(data[i].intake - data[i].allotted - data[i].admitted);
+
+                    // console.log(prog)  
+                    // console.log(data[i].intake)
+                }
+                
+            }
+        });
+    }
+
+    // Call updateData every 5 seconds
+    setInterval(updateData, 5000);
+
+  </script>
+  <script src="https://code.jquery.com/jquery-3.5.1.js"></script> 
+  <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script> 
+  <script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script> 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script> 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script> 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script> 
+  <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script> 
+  <script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.print.min.js"></script> 
+  
+  <link rel="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+  <link rel="https://cdn.datatables.net/buttons/2.3.6/css/buttons.dataTables.min.css">
+    
+    
+{% endblock %}

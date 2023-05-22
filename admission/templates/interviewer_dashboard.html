@@ -1,0 +1,192 @@
+{% extends 'simple_base.html'%}
+{% load static %}
+<!--Title-->
+{% block title %} Interviewer-Dashboard {% endblock %}
+
+{% block content %}
+<style>
+    .panel {
+        text-decoration: none; 
+        text-align: center;
+    }
+    .sidebar {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    bottom: 0;
+    width: 6em;
+    z-index: 996;
+    transition: all 0.3s;
+    padding: 1em 0;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #aab7cf transparent;
+    box-shadow: 0px 0px 20px rgba(1, 41, 112, 0.1);
+    background-color: #ffffff;
+  }
+  .sidebar-nav{
+    width: 100%;
+  }
+  .sidebar-nav .nav-item {
+    width: 100%;
+    padding: 10px;
+    display: grid;
+    place-items: center;
+  }
+  .sidebar-nav .collapse{
+    border-left: 5px solid rgb(25, 0, 255);
+  }
+  .sidebar-nav .nav-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: auto;
+    font-size: 0.9em;
+    padding: 0.2em;
+    background-color: transparent;
+    border-radius: 0.5m;
+    /* need to change color */
+  }
+  .sidebar-nav .nav-link i{
+    margin: 0;
+    
+    width: 2.5em;
+    height: 1.5em;
+    border-radius: 1em;
+    text-align: center;
+  }
+  .sidebar-nav .nav-link span{
+    color: #aeaeae;
+    font-weight: lighter;
+  }
+
+  @media (min-width: 1200px) {
+
+    #main,
+    #footer {
+      margin-left: 6em;
+    }
+
+    #footer {
+      width: calc(100% - 6em);
+    }
+
+    .toggle-sidebar #main,
+    .toggle-sidebar #footer {
+      margin-left: 0;
+    }
+
+    .toggle-sidebar #footer {
+      width: 100%;
+    }
+
+    .toggle-sidebar .sidebar {
+      left: -6em;
+    }
+  }
+
+  @media (max-width: 1199px) {
+
+    #main {
+      padding: 20px;
+      margin-left: 0;
+    }
+
+    .sidebar {
+      left: -6em;
+    }
+
+    .toggle-sidebar #main {
+      margin-left: 6em;
+    }
+
+    #footer {
+      width: 100%;
+    }
+
+    .toggle-sidebar #footer {
+      margin-left: 6em;
+      width: calc(100% - 6em);
+    }
+
+  }
+
+  @media (max-width: 489px) {
+    #main {
+      padding: 20px;
+      margin-left: 0;
+    }
+
+    .toggle-sidebar #main {
+      margin-left: 0;
+    }
+
+    .toggle-sidebar #footer {
+      margin-left: 0;
+      width: 100%;
+    }
+  }
+</style>
+<main id="main" class="main">
+
+    <div class="pagetitle">
+        <h1>Assigned Interviews</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">Home</li>
+                <li class="breadcrumb-item active">Dashboard</li>
+            </ol>
+        </nav>
+    </div><!-- End Page Title -->
+
+    <section class="section dashboard">
+        <div class="row">
+
+            <!-- Left side columns -->
+            <div class="col-lg-12">
+                <div class="row">
+                    {% for panel in panels_assigned %}
+                    <!-- addedd for loop -->
+                    <!-- interview Card -->
+                    <div class="col-xxl-4 col-md-4">
+                        <div class="card info-card sales-card">
+
+                            <a href="{% if request.user.user_type == 'faculty' %}{% url 'sc_panel' panel_id=panel.panel_id %}{% else %}{% url 'sp_panel' panel_id=panel.panel_id %}{% endif %}"
+                                class="panel"{% if panel.interview_id.status != 'active' %} style="pointer-events: none"{% endif %} >
+
+                                <div class="card-body" data-toggle="modal">
+                                    <div class="card-title">
+                                        <h5 class="card-title">{{panel.interview_id}}</h5>
+                                        <span class="text-muted small pt-2 ps-1">status: {{panel.interview_id.status}}</span>
+                                    </div>
+
+                                    <div class="d-flex align-items-center">
+                                        <div
+                                            class="card-icon rounded-circle d-flex align-items-center justify-content-center text">
+                                            <i class="bi bi-people-fill"></i>
+                                        </div>
+                                        <div class="ps-3">
+                                            <span class="text-success small pt-1">{{panel.interview_id.date}}</span>
+                                            <span class="text-muted small pt-2 ps-1"></span>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </a>
+
+                        </div>
+                    </div>
+                    {% endfor %}
+
+                </div>
+            </div><!-- End Left side columns -->
+
+            <!-- Right side columns -->
+
+        </div>
+    </section>
+
+</main><!-- End #main -->
+
+{% endblock %}

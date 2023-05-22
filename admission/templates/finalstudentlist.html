@@ -1,0 +1,160 @@
+{% extends 'fatherdashboard.html' %}
+
+{% load crispy_forms_tags %}
+<!--Title-->
+{% block title %} Student Report-Page {% endblock %}
+<!-- end title -->
+
+{% block maincontent %}
+<style>
+  
+#selection-status{
+  display: grid;
+  gap: 1em;
+  
+}
+
+#selection-status label {
+  display: inline-block;
+  border-radius: 10px;
+  text-align: center;
+  height: 2em;
+  background-color: #f9f9f9;
+  box-shadow: 2px 2px 5px #bebebe;
+  position: relative;
+}
+#selection-status label .selectstatus{
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+}
+
+#selection-status input[type="radio"] {
+    opacity: 0.01;
+    z-index: 100;  
+}
+/* Style for the selected radio button */
+label input[value="selected"]:checked + .selectstatus {
+  background-color:  rgba(25, 170, 25, 0.836);
+  color: white;
+}
+
+/* Style for the not selected radio button */
+label input[value="not_selected"]:checked + .selectstatus {
+  background-color: rgba(219, 22, 22, 0.836);
+  color: white;
+}
+
+/* Style for the waiting list radio button */
+label input[value="waiting_list"]:checked + .selectstatus {
+  background-color: rgba(255, 151, 55, 0.953);
+  color: white;
+}
+
+
+
+</style>
+
+<main id="main" class="main">
+
+
+  <section class="section">
+    <div class="row">
+      <div class="col-lg-12">
+
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Report</h5>
+
+            <!-- Default Table -->
+            <table id="table_data" class="table table-striped w-100" style="width:100%">
+                <thead>
+                    <tr>
+
+                        <th>Reg no</th>
+                        <th>Details</th>
+                        <th>Marks %</th>
+                        <th>Remark1</th>
+                        <th>Remark2</th>
+                        <th>Selection Status</th>
+                    </tr>
+                </thead>
+    
+                <tbody>
+                  <tr>
+                    <td> student.application_number }}</td>
+
+                    <td>{{ student.applied_program }}<br><br>&#13;&#10;&#13;&#10;{{ student.first_name }} {% if student.middle_name %}{{ student.middle_name }}{% endif %} {% if student.last_name %}{{ student.last_name }}{% endif %} <br><br><b>&#13;&#10;&#13;&#10;DoB:</b> {{ student.dob }} <br><b>&#13;&#10;StateOfBoard:</b> {{ student.state_of_board }} <br><b>&#13;&#10;Nationality:</b> {{ student.nationality }} <br></td>
+
+                    <td><b>X :</b> {{ student.tenth_percentage }}% ({{ student.tenth_year }})<br><b>&#13;&#10;XII :</b> {% if not student.course_category == 'PG' %} {{ student.aggregrate_percentage_including_language_for_UG }} {% else %} {{ student.twelfth_percentage }} {% endif %}% ({% if not student.course_category == 'PG' %} {{ student.year_of_passing }} {% else %} {{ student.twelfth_year }} {% endif %})<br><b>&#13;&#10;UG :</b> {% if student.course_category == 'PG' %}{{ student.aggregrate_percentage_including_language_for_PG }}{% endif %}% ({% if student.course_category == 'PG' %}{{ student.year_of_passing }}{% endif %})<br><br>&#13;&#10;&#13;&#10; {{student.result_status}}<br><br><b>&#13;&#10;&#13;&#10;Previous Institution:</b> {{ student.name_of_institution }}</td>
+
+                    
+                    <td><b>Reviewer ID:</b> {{remark.reviewer_id}} <br> <b>&#13;&#10;Mode of Education:</b> {{remark.mode_of_education}}<br><b>&#13;&#10;Sec. Lang.:</b> {{remark.second_language}}<br><b>&#13;&#10;Cocurricular activities:</b> {{remark.cocurricular_activities}}<br><b>&#13;&#10;Subject Knowledge:</b> {{remark.subject_knowledge}}<br><b>&#13;&#10;Attitude:</b> {{remark.attitude}}<br><b>&#13;&#10;Communication:</b> {{remark.communication}}<br><br><b>&#13;&#10;&#13;&#10;Remark:</b> {{remark.remarks}}<br><b>&#13;&#10;Notes for admission office:</b> {{remark.notes_for_admission_office}}<br><br><b>&#13;&#10;&#13;&#10;Interview score:</b> {{remark.interview_score}}<br><b>&#13;&#10;Activity score:</b> {{remark.activity_score}}</td>
+                    <td><b>Reviewer ID:</b> {{remark.reviewer_id}} <br> <b>&#13;&#10;Mode of Education:</b> {{remark.mode_of_education}}<br><b>&#13;&#10;Sec. Lang.:</b> {{remark.second_language}}<br><b>&#13;&#10;Cocurricular activities:</b> {{remark.cocurricular_activities}}<br><b>&#13;&#10;Subject Knowledge:</b> {{remark.subject_knowledge}}<br><b>&#13;&#10;Attitude:</b> {{remark.attitude}}<br><b>&#13;&#10;Communication:</b> {{remark.communication}}<br><br><b>&#13;&#10;&#13;&#10;Remark:</b> {{remark.remarks}}<br><b>&#13;&#10;Notes for admission office:</b> {{remark.notes_for_admission_office}}<br><br><b>&#13;&#10;&#13;&#10;Interview score:</b> {{remark.interview_score}}<br><b>&#13;&#10;Activity score:</b> {{remark.activity_score}}</td>
+
+                    <!-- <td></td> -->
+                    
+                    <td>
+                      <form method="post" id="selection-status">
+                        {% csrf_token %}
+                        <!-- <div class="status"> -->
+                            <input type="hidden" name="index" value="{{ forloop.counter0 }}">
+                            <label><input type="radio" name="status" value="selected" {% if student.status == "selected" %}checked{% endif %}><div class="selectstatus">Selected</div></label>
+                            <label><input type="radio" name="status" value="not_selected" {% if student.status == "not_selected" %}checked{% endif %}><div class="selectstatus">Not Selected</div></label>
+                            <label><input type="radio" name="status" value="waiting_list" {% if student.status == "waiting_list" %}checked{% endif %}><div class="selectstatus">Waiting List</div></label>
+                        <!-- </div> -->
+                        <select name="course_select" id="course_select" class="form-control" multiselect-search="true" multiselect-select-all="false" multiselect-max-items="1">
+                          
+                          <!-- {% for course in courses %}-->
+                          <option value="course" selected>course</option>
+                          <option value="course">course</option>
+                          <option value="course">course</option>
+                          <!--{% endfor %} -->
+                        </select>
+                      </form>
+                        
+                    </td>
+                    <!-- <td>{{ student.name_of_institution }} <br>DistrictOfBoard: {{ student.district_of_board }} <br>{{ remarks.cocurricular_activities }} <br>Remark1: {{ student.remark1 }} <br>Remark2: {{ student.remark2 }} <br>Remark3: {{ student.remark2 }}</td> -->
+                  </tr>
+
+                  
+                </tbody>
+            </table>
+            <!-- End Default Table Example -->
+          </div>
+        </div>
+
+     
+
+      </div>
+
+      
+    </div>
+  </section>
+
+
+
+
+
+</main>    
+<script src="https://code.jquery.com/jquery-3.5.1.js"></script> 
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script> 
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script> 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script> 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script> 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script> 
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script> 
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.print.min.js"></script> 
+
+<link rel="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+<link rel="https://cdn.datatables.net/buttons/2.3.6/css/buttons.dataTables.min.css">
+
+
+
+
+                                                                        
+
+{% endblock %}

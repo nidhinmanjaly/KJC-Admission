@@ -1,0 +1,71 @@
+{% extends 'principal_dashboard.html' %}
+
+{% block title %} Courses wise report {% endblock %}
+
+{% block maincontent %}
+
+<main id="main" class="main">
+
+    <section class="section">
+      <div class="row">
+        <div class="col-lg-12">
+  
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Report</h5>
+  
+              <!-- Default Table -->
+              <table id="table_data" class="table table-striped w-100" style="width:100%;">
+                  <thead>
+                      <tr>
+                          <th>Course</th>
+                          <th>Intake</th>
+                          <th>Admitted</th>
+                          <th>Allotted</th>
+                          <th>Vacant</th>
+                          <th>Total students</th>
+                          <th>Not selected</th>
+                          <th>Waiting list</th>
+                      </tr>
+                  </thead>
+      
+                  <tbody>
+                    {% for courseInfo in courseDetails %}
+                    <tr>
+                        <td>{{ courseInfo.program }}</td>
+                        <td>{{ courseInfo.intake }}</td>
+                        <td>{{ courseInfo.admitted }}</td>
+                        <td>{{ courseInfo.allotted }}</td>
+                        <td>{{ courseInfo.vacant }}</td><!--Vacant-->
+                        <td>{{ courseInfo.totalStudents }}</td>
+                        <td>{{ courseInfo.not_selected }}</td>
+                        <td>{{ courseInfo.waiting_list }}</td>
+                    </tr>
+                    {% endfor %}
+                    
+                  </tbody>
+              </table>
+              <!-- End Default Table Example -->
+            </div>
+          </div>
+  
+       
+  
+        </div>
+  
+        
+      </div>
+    </section>
+  
+</main>    
+<script>
+$(document).ready(function () {
+    $('#table_data').DataTable(
+    {
+        paging: false,
+    }
+    );
+});
+</script>
+
+{% endblock %}

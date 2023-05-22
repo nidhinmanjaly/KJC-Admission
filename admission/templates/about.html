@@ -1,0 +1,345 @@
+{% extends 'simple_base.html'%}
+{% load static %}
+{% block title %}
+Dashboard
+{% endblock %}
+
+{% block content %}
+
+<style>
+  .sidebar {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    bottom: 0;
+    width: 6em;
+    z-index: 996;
+    transition: all 0.3s;
+    padding: 1em 0;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #aab7cf transparent;
+    box-shadow: 0px 0px 20px rgba(1, 41, 112, 0.1);
+    background-color: #ffffff;
+  }
+  .sidebar-nav{
+    width: 100%;
+  }
+  .sidebar-nav .nav-item {
+    width: 100%;
+    padding: 10px;
+    display: grid;
+    place-items: center;
+  }
+  .sidebar-nav .collapse{
+    border-left: 5px solid rgb(25, 0, 255);
+  }
+  .sidebar-nav .nav-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: auto;
+    font-size: 0.9em;
+    padding: 0.2em;
+    background-color: transparent;
+    border-radius: 0.5m;
+    /* need to change color */
+  }
+  .sidebar-nav .nav-link i{
+    margin: 0;
+    
+    width: 2.5em;
+    height: 1.5em;
+    border-radius: 1em;
+    text-align: center;
+  }
+  .sidebar-nav .nav-link span{
+    color: #aeaeae;
+    font-weight: lighter;
+  }
+
+  @media (min-width: 1200px) {
+
+    #main,
+    #footer {
+      margin-left: 6em;
+    }
+
+    #footer {
+      width: calc(100% - 6em);
+    }
+
+    .toggle-sidebar #main,
+    .toggle-sidebar #footer {
+      margin-left: 0;
+    }
+
+    .toggle-sidebar #footer {
+      width: 100%;
+    }
+
+    .toggle-sidebar .sidebar {
+      left: -6em;
+    }
+  }
+
+  @media (max-width: 1199px) {
+
+    #main {
+      padding: 20px;
+      margin-left: 0;
+    }
+
+    .sidebar {
+      left: -6em;
+    }
+
+    .toggle-sidebar #main {
+      margin-left: 6em;
+    }
+
+    #footer {
+      width: 100%;
+    }
+
+    .toggle-sidebar #footer {
+      margin-left: 6em;
+      width: calc(100% - 6em);
+    }
+
+  }
+
+  @media (max-width: 489px) {
+    #main {
+      padding: 20px;
+      margin-left: 0;
+    }
+
+    .toggle-sidebar #main {
+      margin-left: 0;
+    }
+
+    .toggle-sidebar #footer {
+      margin-left: 0;
+      width: 100%;
+    }
+  }
+</style>
+
+
+
+<main id="main" class="main">
+
+    <div class="pagetitle text-center">
+        <h1>Software Development cell</h1>
+        <nav>
+          <ol class="breadcrumb justify-content-center">
+            <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
+            <li class="breadcrumb-item">Team</li>          
+          </ol>
+        </nav>
+      </div><!-- End Page Title -->   
+
+
+
+      <section class="section text-center">
+        <div class="row justify-content-center">
+          <div class="col-lg-10">
+  
+            <!-- Default Card -->
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">Smart Interview Manager?</h5>
+                The Smart Interview Manager is a software application that
+                streamlines the process of conducting Admission interviews.
+                This software is designed to help the college
+                to manage their interview process more effectively by automating
+                the process of scheduling, organizing, and conducting interviews.
+                The software aims to help make better selection decisions
+                by providing them with more efficient and organized interview processes.
+                </div>
+            </div>
+        </div>
+    </div>
+    </section>
+
+    <div class="pagetitle text-center">
+      <hr class="border-secondary">
+      <h1>Faculty Coordinators</h1> 
+  </div>
+
+    <section class="section profile">
+        <div class="row justify-content-center">
+            <div class="col-xl-4">
+  
+                <div class="card">
+                  <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
+      
+                    <!-- <img src="static/assets/img/john.png" alt="Profile" class="rounded-circle" style="width: 116px;"> -->
+                    <h2 class="text-dark">Mr. Bino Joseph</h2>
+                    <center><h6  style="font-size: 13px;">Director of Admission Office</h6></center>
+                   
+      
+                    <div class="social-links mt-2">
+                      <a href="#" class="linkedin"><i class="bi bi-linkedin"></i></a>                
+                    </div>
+                  </div>
+                </div>
+      
+            </div>        
+  
+         
+           
+            <div class="col-xl-3">
+  
+              <div class="card">
+                <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
+    
+                  <!-- <img src="static/assets/img/john.png" alt="Profile" class="rounded-circle" style="width: 116px;"> -->
+                  <h2 class="text-dark">Kurian George</h2>
+                  <center><h6  style="font-size: 13px;">Project Coordinator </h6> </center>
+                  
+    
+                  <div class="social-links mt-2">                
+                    <a href="https://www.linkedin.com/in/kurian-george-cheripurathu-88387273/" target="_blank" class="linkedin"><i class="bi bi-linkedin"></i></a>
+                  </div>
+                </div>
+              </div>
+    
+            </div>
+        </div>
+    </section>
+
+       <div class="pagetitle text-center">
+            <hr class="border-secondary">
+            <h1>Student Development Team </h1>
+      </div>
+
+    <section class="section profile">
+      <div class="row justify-content-center">
+        
+
+        <div class="col-xl-4">
+
+            <div class="card">
+              <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
+                <h2 class="text-dark">Johnpaul K Reju</h2>
+                <h6  style="font-size: 13px;">22MCAA32 CS(PG) </h6>
+                <h6  style="font-size: 11px;">BATCH: 2022-24</h6>
+                <h5 style="font-size: 16px;">Backend Developer</h5>
+  
+                <div class="social-links mt-2">                
+                  <a href="https://www.linkedin.com/in/johnpaul-k-reju-3512021b2/" target="_blank" class="linkedin"><i class="bi bi-linkedin"></i></a>
+                </div>
+              </div>
+            </div>
+  
+          </div>
+
+          <div class="col-xl-4">
+
+            <div class="card">
+              <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
+  
+                <h2 class="text-dark">Arjun G K</h2>
+                <h6  style="font-size: 13px;">21MCAA07 CS(PG)</h6>
+                <h6  style="font-size: 11px;">BATCH: 2021-23</h6>
+                <h5 style="font-size: 16px;">Full Stack Developer</h5>
+  
+                <div class="social-links mt-2">                
+                  <a href="https://www.linkedin.com/in/arjun-g-k-336501223/" target="_blank" class="linkedin"><i class="bi bi-linkedin"></i></a>
+                </div>
+              </div>
+            </div>
+  
+          </div>
+
+          <div class="col-xl-4">
+
+            <div class="card">
+              <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
+  
+                <h2 class="text-dark">Abin Xavier</h2>
+                <h6  style="font-size: 13px;">22MCAA02 CS(PG)</h6>
+                <h6  style="font-size: 11px;">BATCH: 2022-24</h6>
+                <h5 style="font-size: 16px;">Full Stack Developer</h5>
+  
+                <div class="social-links mt-2">                
+                  <a href="https://www.linkedin.com/in/abinx/" target="_blank" class="linkedin"><i class="bi bi-linkedin"></i></a>
+                </div>
+              </div>
+            </div>  
+          </div>          
+      </div>
+
+      <div class="row">
+        <div class="col-xl-4">
+
+            <div class="card">
+              <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
+  
+                <h2 class="text-dark">Aswin P K</h2>
+                <h6  style="font-size: 13px;">22MCAA09 CS(PG) </h6>
+                <h6  style="font-size: 11px;">BATCH: 2022-24</h6>
+                <h5 style="font-size: 16px;">Full Stack Developer</h5>
+  
+                <div class="social-links mt-2">                
+                  <a href="https://www.linkedin.com/in/aswinpk47/" target="_blank" class="linkedin"><i class="bi bi-linkedin"></i></a>
+                </div>
+              </div>
+            </div>
+  
+          </div>
+          <div class="col-xl-4">
+
+            <div class="card">
+              <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
+  
+                <h2 class="text-dark">Basil Lal</h2>
+                <h6  style="font-size: 13px;">22MCAA12 CS(PG) </h6>
+                <h6  style="font-size: 11px;">BATCH: 2022-24</h6>
+                <h5 style="font-size: 16px;">Frontend Developer</h5>
+  
+                <div class="social-links mt-2">                
+                  <a href="https://www.linkedin.com/in/basil-lal-556361244/" target="_blank" class="linkedin"><i class="bi bi-linkedin"></i></a>
+                </div>
+              </div>
+            </div>
+  
+          </div>
+          <div class="col-xl-4">
+
+            <div class="card">
+              <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
+  
+                <h2 class="text-dark">Abba Jason</h2>
+                <h6  style="font-size: 13px;">22MCAA01 CS(PG) </h6>
+                <h6  style="font-size: 11px;">BATCH: 2022-24</h6>
+                <h5 style="font-size: 16px;">Backend Developer</h5>
+  
+                <div class="social-links mt-2">                
+                  <a href="https://www.linkedin.com/in/jasonabba/" target="_blank" class="linkedin"><i class="bi bi-linkedin"></i></a>
+                </div>
+              </div>
+            </div>
+  
+          </div>
+
+
+      </div>
+      
+
+        
+
+    </section>
+
+    
+
+  </main><!-- End #main -->
+      
+
+
+
+
+{% endblock %}

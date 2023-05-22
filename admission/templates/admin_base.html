@@ -1,0 +1,36 @@
+{% extends 'simple_base.html' %}
+
+{% block sidebar %}
+
+{% block sidebar-extra %}
+{% endblock %}
+
+<li class="nav-item">
+    <a class="nav-link collapsed " href="{% url 'create_user'%}">
+        <i class="bi bi-journal-text"></i>
+        <span>Users</span>
+    </a>
+</li>
+<li class="nav-item">
+    <a class="nav-link collapsed" data-bs-target="#tables-nav" data-bs-toggle="collapse" href="#">
+        <i class="bi bi-layout-text-window-reverse"></i><span>Reports</span><i class="bi bi-chevron-down ms-auto"></i>
+    </a>
+    <ul id="tables-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
+        {% block report_options %}
+        {% endblock %}
+        <li>
+            <a href="{% url 'archived_data'%}">
+                <i class="bi bi-circle"></i><span>Archived Data</span>
+            </a>
+        </li>
+    </ul>
+</li>   
+
+
+<li class="nav-item">
+    <a class="nav-link collapsed " href="{% url 'backup' %}">
+        <i class="bi bi-database"></i>
+        <span>Backup</span>
+    </a>
+</li>  
+{% endblock %}

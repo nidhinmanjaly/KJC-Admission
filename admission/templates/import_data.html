@@ -1,0 +1,254 @@
+{% extends 'admin_base.html'%}
+{% load static%}
+{% block title %}
+Import-Data
+{% endblock %}
+
+{% block content %}
+<style>
+  h5 > a {
+    text-decoration: none;
+  }
+
+</style>
+<main id="main" class="main">
+  
+  <!-- APPLICANT DETAIL UPLOAD -->
+  <div class="container">
+    <div class="card text-center">
+      <div class="card-header  d-flex">
+        <h5 class="text-left">Applicant Details</h5>
+        <h5 style="position: absolute; right: 0;" class="col-md-3 pr-2">Download Excel Format<a href="{% static 'files\applicant_details_format.xlsx' %}" download>
+          <abbr title="Download"><i class="bi bi-download"></i></abbr>
+        </a></h5>
+        
+      </div>
+      <div class="card-body">
+        <form method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+          <h5 class="card-title">Upload File </h5>
+          <input type="file" class="" name="input_file1" id="input_file1" required />
+          <button type="submit" class="btn btn-secondary mt-2" id="upload_btn1" name="upload_btn1" onclick="changeVis()"
+            disabled="disabled">Submit</button>
+        </form>
+        <div id="pbar" class="progress_container d-none mt-3">
+          <div class="progress">
+            <div class="progress-bar progress-bar-striped " role="progressbar" style="width: 0%" aria-valuenow="0"
+              aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+        </div>
+        {% if message == "success" %}
+        <div class="alert alert-success mt-2" role="alert">
+          File Uploaded Successfully
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- ALLOTMENT DETAIL UPLOAD -->
+  <div class="container">
+    <div class="card text-center">
+      <div class="card-header  d-flex">
+        <h5 class="text-left">Allotment Details</h5>
+        <h5 style="position: absolute; right: 0;" class="col-md-3 pr-2">Generate Excel Format<a href="{% url 'generate_allotment_detail_format' interview_id=interview_id %}">
+          <abbr title="Download"><i class="bi bi-download"></i></abbr>
+        </a></h5>
+        
+      </div>
+      <div class="card-body">
+        <form method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+          <h5 class="card-title">Upload File </h5>
+          <input type="file" class="" name="input_file2" id="input_file2" required />
+          <button type="submit" class="btn btn-secondary mt-2" id="upload_btn2"  name="upload_btn2" onclick="changeVis2()"
+            disabled="disabled">Submit</button>
+        </form>
+        <div id="pbar2" class="progress_container d-none mt-3">
+          <div class="progress">
+            <div class="progress-bar progress-bar-striped " role="progressbar" style="width: 0%" aria-valuenow="0"
+              aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+        </div>
+        {% if message == "success2" %}
+        <div class="alert alert-success mt-2" role="alert">
+          File Uploaded Successfully
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- CANDIDATE SELECTION DETAIL UPLOAD -->
+  <div class="container">
+    <div class="card text-center">
+      <div class="card-header  d-flex">
+        <h5 class="text-left">Candidate Selection Data</h5>
+        <h5 style="position: absolute; right: 0;" class="col-md-3 pr-2">Download Excel Format<a href="{% static 'files\candidate_selection_data_format.xlsx' %}" download>
+          <abbr title="Download"><i class="bi bi-download"></i></abbr>
+        </a></h5>
+        
+      </div>
+      <div class="card-body">
+        <form method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+          <h5 class="card-title">Upload File </h5>
+          <input type="file" class="" name="input_file3" id="input_file3" required />
+          <button type="submit" class="btn btn-secondary mt-2" id="upload_btn3"  name="upload_btn3" onclick="changeVis3()"
+            disabled="disabled">Submit</button>
+        </form>
+        <div id="pbar3" class="progress_container d-none mt-3">
+          <div class="progress">
+            <div class="progress-bar progress-bar-striped " role="progressbar" style="width: 0%" aria-valuenow="0"
+              aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+        </div>
+        {% if message == "success3" %}
+        <div class="alert alert-success mt-2" role="alert">
+          File Uploaded Successfully
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- RECCOMENDATION DETAIL UPLOAD -->
+  <div class="container">
+    <div class="card text-center">
+      <div class="card-header  d-flex">
+        <h5 class="text-left">Reviewers Indicator Data Upload</h5>
+        <h5 style="position: absolute; right: 0;" class="col-md-3 pr-2">Download Excel Format<a href="{% static 'files\reviewers_indicators_format.xlsx' %}" download>
+          <abbr title="Download"><i class="bi bi-download"></i></abbr>
+        </a></h5>
+        
+      </div>
+      <div class="card-body">
+        <form method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+          <h5 class="card-title">Upload File</h5>
+          <input type="file" class="" name="input_file4" id="input_file4" required />
+          <button type="submit" class="btn btn-secondary mt-2" id="upload_btn4"  name="upload_btn4" onclick="changeVis4()"
+            disabled="disabled">Submit</button>
+        </form>
+        <div id="pbar4" class="progress_container d-none mt-3">
+          <div class="progress">
+            <div class="progress-bar progress-bar-striped " role="progressbar" style="width: 0%" aria-valuenow="0"
+              aria-valuemin="0" aria-valuemax="100"></div>
+          </div>
+        </div>
+        {% if message == "success4" %}
+        <div class="alert alert-success mt-2" role="alert">
+          File Uploaded Successfully
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+
+  (function () {
+    $('#input_file1').change(
+      function () {
+        if ($(this).val()) {
+          $('#upload_btn1').removeAttr('disabled');
+        }
+        else {
+          $('#upload_btn1').attr('disabled', 'disabled');
+        }
+      }
+    );
+
+    $('#input_file2').change(
+      function () {
+        if ($(this).val()) {
+          $('#upload_btn2').removeAttr('disabled');
+        }
+        else {
+          $('#upload_btn2').attr('disabled', 'disabled');
+        }
+      }
+    );
+
+    $('#input_file3').change(
+      function () {
+        if ($(this).val()) {
+          $('#upload_btn3').removeAttr('disabled');
+        }
+        else {
+          $('#upload_btn3').attr('disabled', 'disabled');
+        }
+      }
+    );
+
+    $('#input_file4').change(
+      function () {
+        if ($(this).val()) {
+          $('#upload_btn4').removeAttr('disabled');
+        }
+        else {
+          $('#upload_btn4').attr('disabled', 'disabled');
+        }
+      }
+    );
+
+  })()
+
+  function changeVis() {
+    // console.log("Pressed");
+    var pbar = document.getElementById('pbar');
+
+    pbar.classList.remove('d-none');
+    // console.log("success");
+
+    progress();
+
+  }
+
+  function changeVis2() {
+    
+    var pbar = document.getElementById('pbar2');
+    pbar.classList.remove('d-none');
+    
+    progress();
+  }
+
+  function changeVis3() {
+    
+    var pbar = document.getElementById('pbar3');
+    pbar.classList.remove('d-none');
+    
+    progress();
+  }
+
+  function changeVis4() {
+  
+    var pbar = document.getElementById('pbar4');
+    pbar.classList.remove('d-none');
+    
+    progress();
+  }
+
+  function progress() {
+    var current_progress = 0
+    var step = 0.5; // the smaller this is the slower the progress bar
+    interval = setInterval(function () {
+      current_progress += step;
+      progress = Math.round(Math.atan(current_progress) / (Math.PI / 2) * 100 * 1000) / 1000
+      $(".progress-bar")
+        .css("width", progress + "%")
+        .attr("aria-valuenow", progress)
+        .text(progress + "%");
+      if (progress >= 100) {
+        clearInterval(interval);
+      } else if (progress >= 70) {
+        step = 0.1
+      }
+    }, 100);
+
+  }
+
+</script>
+{% endblock %}

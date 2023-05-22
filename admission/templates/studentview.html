@@ -1,0 +1,255 @@
+{% load static %}
+<!DOCTYPE html>
+<head>
+    <meta http-equiv="refresh" content="750">
+    <link rel="stylesheet" href="{% static '/assets/css/style.css' %}">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.gstatic.com" rel="preconnect">
+    <link
+        href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
+        rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+
+    <!-- Vendor CSS Files -->
+    <link href="{% static 'assets/vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'assets/vendor/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+    <link href="{% static 'assets/vendor/boxicons/css/boxicons.min.css' %}" rel="stylesheet">
+    <link href="{% static 'assets/vendor/quill/quill.snow.css' %}" rel="stylesheet">
+    <link href="{% static 'assets/vendor/quill/quill.bubble.css' %}" rel="stylesheet">
+    <link href="{% static 'assets/vendor/remixicon/remixicon.css' %}" rel="stylesheet">
+    <link href="{% static 'assets/vendor/simple-datatables/style.css' %}" rel="stylesheet">
+
+
+
+    <script src="https://kit.fontawesome.com/06d8e71458.js" crossorigin="anonymous"></script>
+
+    <title>Queue Display</title>
+
+    <style>
+        #main {
+            margin-left: 0;
+            margin-bottom: 0;
+        }
+
+        section {
+            width: 100%;
+        }
+
+        .carousel .card-deck {
+            display: grid;
+            grid-template-columns: auto auto auto auto auto;
+            gap: 1em;
+            width: 100%;
+        }
+
+        .c-details span {
+            font-weight: 300;
+            font-size: 13px
+        }
+
+        .list {
+            font-size: 0.8em;
+            padding: 1px;
+            margin: 2px;
+        }
+
+        .text2 {
+            color: #a5aec0
+        }
+
+
+
+        .panelname {
+            height: 1.5em;
+            width: 100%;
+            background-color: rgb(77, 130, 222);
+            font-size: 1.3em;
+            color: #fff;
+            border-radius: 0.3em 0.3em 0 0;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        .studentlist {
+            height: auto;
+            width: 100%;
+            font-size: 1.4em;
+            background-color: rgb(247, 247, 247);
+        }
+
+        /* .studentlist .list{
+        border-bottom: 1px solid #eeeeeee2;
+        padding-left: 0.5em;
+        color: #4a4a4a;
+    } */
+
+        .studentlist {
+            position: relative;
+            display: grid;
+            font-family: 'Verdana', 'Geneva', 'Tahoma', 'sans-serif';
+            background-color: inherit;
+
+        }
+
+        .studentlist b {
+            float: left;
+            margin-left: 1em;
+            font-size: 0.86em;
+        }
+
+        .studentlist i {
+            margin-left: 1em;
+            position: absolute;
+            font-size: 0.6em;
+        }
+
+        .studentlist .list:nth-child(1)::after {
+            content: '';
+            width: 0.6em;
+            height: 0.6em;
+            border-radius: 50%;
+            position: absolute;
+            right: 1em;
+            top: 0.4em;
+            background-color: #00ba00;
+            animation: animate 1s infinite;
+        }
+
+        @keyframes animate {
+            0% {
+                transform: scale(0.5);
+            }
+
+            50% {
+                background-color: #42c342;
+            }
+
+            70% {
+                background-color: #88e788;
+            }
+
+            100% {
+                background-color: #e1f7e1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- ======= Header ======= -->
+    <header id="header" class="header fixed-top d-flex align-items-center" style="height: 50px;">
+
+        <div class="d-flex align-items-center justify-content-between">
+            <a href="{% url 'index' %}" class="logo d-flex align-items-center" style="text-decoration: none;">
+                <img src="{% static 'assets/img/kjc_icon.jpg' %}" alt="">
+                <span class="d-none d-lg-block">Smart Interview Manager</span>
+            </a>
+
+        </div><!-- End Logo -->
+
+    </header><!-- End Header -->
+    
+    <main id="main" class="main" style="margin-top: 35px;">
+        <div class="pagetitle">
+            <nav style="background-color: #19376D;padding: 5px;">
+                <center><span class="breadcrumb-item h5 text-light m-2">Tentative Queue Order For Interview Call</span></center>
+            </nav>
+        </div><!-- End Page Title -->
+
+        <section class="section">
+
+
+            <div id="queue_carousel" class="carousel carousel-dark slide" data-bs-ride="carousel" data-bs-interval="30000">
+
+                <div class="carousel-inner">
+
+                    {% for p_list in q_list %}
+                        <div class="carousel-item {% if forloop.counter == 1 %} active {% endif %}">
+                            <div class="card-deck col-md-6"> <!--this is the cards container   -->
+                                {% for p in p_list %}
+                                    <div class="card" style="border: 1px solid #212121;">
+                                        {% for panel, students in p.items %}
+                                            <div class="card-header text-center">{{panel.panel_id}}</div>
+                                            <div class="card-body cards">
+                                                <div class="studentlist">
+                                                    {% for s in students %}
+                                                        <span class="list text-center">
+                                                                <span style="font-weight: bold; font-size: 15px;">
+                                                                    {{s.application_number}}
+                                                                </span>
+                                                                <br>
+                                                                <span style="font-style: oblique; font-size: 11px;">
+                                                                    ({{s.first_name}} {% if s.middle_name %}{{s.middle_name}}{% endif %} {% if s.last_name %}{{s.last_name}}{% endif %})
+                                                                </span>
+                                                        </span>
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        {% endfor %}
+                                        <div class="card-footer text-center">
+                                            <!-- <small class="text-muted">Last updated 3 mins ago</small> -->
+                                            <!-- <span class="text-muted" style="font-size: 13px;">*Above are the next 10 Candidates</span> -->
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endfor %}
+
+                    <button class="carousel-control-prev" type="button" data-bs-target="#queue_carousel"
+                        data-bs-slide="prev" style="width: 2em">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#queue_carousel"
+                        data-bs-slide="next" style="width: 2em">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
+            </div>
+
+
+        </section>
+
+    </main>
+    <footer class="text-center" style="background-color: #19376D; position:sticky; width: 100%;">
+        <span class="text-light">If your application number is not listed above, please wait for your turn.</span>
+    </footer>
+
+    <script>
+        function updateData() {
+            $.ajax({
+                url: "{% url 'get_live_panel_details' interview_id=interview_id %}",
+                dataType: 'json',
+                success: function (response) {
+                    var data = response.data;
+                    for (var i = 0; i < data.length; i++) {
+                        // console.log(data[i]);
+
+                        for (var j = 0; j < data[i].length; j++) {
+                            // console.log(data[i][j]);
+                            // console.log(data[i][j].name);
+                        }
+                    }
+
+                }
+            });
+        }
+
+        // Call updateData every 5 seconds
+        setInterval(updateData, 5000);
+    </script>
+    
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script> 
+    <script src="{% static 'assets/js/main.js' %}"></script>
+    <script src="{% static 'assets/vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>

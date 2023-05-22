@@ -1,0 +1,136 @@
+{% extends 'admin_base.html'%}
+{% load crispy_forms_tags %}
+
+{% block title %} Backup {% endblock %}
+
+{% block content %}
+<style>
+  table {
+    margin: 20px;
+  }
+
+  td, th {
+    padding: 5px;
+  }
+  
+</style>
+<!-- BACKUP_MODAL -->
+<div class="modal fade" id="backup_database" tabindex="-1" aria-labelledby="backup_database" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Backup Database</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form method="post">
+          {% csrf_token %}
+          <h6> <i class="bi bi-exclamation-triangle" style="margin-right:5px ; color:red"> </i>Please ensure that final
+            review for all applicants are completed!</h6>
+          <input type="hidden" name="interview_id" id="backup_database_interview_id" value="{{ interview_id }}" readonly>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary btn-success" name="backup-db-btn">Backup</button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- FLUSH_MODAL -->
+<div class="modal fade" id="flush_database" tabindex="-1" aria-labelledby="flush_database" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Flush Database</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form method="post">
+          {% csrf_token %}
+          <h6>This actions clears the following data:</h6>
+          <ul>
+            <li>ApplicantDetails</li>
+            <li>Interviews</li>
+            <li>Panels</li>
+            <li>Remarks</li>
+          </ul>
+          <h6><i class="bi bi-exclamation-triangle" style="margin-right:5px ; color:red"> </i>This action cannot be
+            undone!</h6>
+          <input type="hidden" name="interview_id" id="flush_database_interview_id" value="{{ interview_id }}" readonly>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary btn-danger" name="flush-db-btn">Flush</button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<main id="main" class="main">
+
+  <div class="card">
+    <div class="card-body ">
+      <h5 class="card-title d flex text-center"><i class="bi bi-exclamation-triangle text-danger"></i></h5>
+      <div class="d-flex justify-content-center">
+
+
+        <div class="float-center-center">
+
+          <button type="button" class="btn btn-success p-2 mr-2" data-bs-toggle="modal"
+            data-bs-target="#backup_database" value="{{interview_id}}"><i
+              class="bi bi-database-fill-x pl-2 ml-2"></i>BackUp
+            DataBase</button>
+          <button type="button" class="btn btn-danger p-2 mr-2" data-bs-toggle="modal" data-bs-target="#flush_database"
+            value="{{interview_id}}"><i class="bi bi-database-fill-x pl-2 ml-2 "></i> Flush
+            DataBase</button>
+
+        </div>
+      </div>
+
+      {% if message == "backup-success" %}
+        <div class="alert alert-success text-center mt-3" role="alert">
+          Backup Successful
+        </div>
+      {% elif message == "flush-success" %}
+        <div class="alert alert-success text-center mt-3" role="alert">
+          Db Flush Successful
+        </div>
+      {% elif message == "backup-error" %}
+        <div class="alert alert-danger mt-3" role="alert">
+          <h5 class="text-center" style="font-weight: bold;">Cannot Backup data !!</h5>
+          {% if pending_applications %}
+            <span>The applications listed below are pending review by Principal: </span>
+            <table>
+              <thead>
+                <tr>
+                  <th>Application No</th>
+                  <th>Applied Course</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in pending_applications %}
+                  <tr>
+                    <td> {{row.0}} </td>
+                    <td> {{row.1}} </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          {% endif %}
+        </div>
+      {% endif %}
+
+    </div>
+  </div>
+
+
+
+</main>
+{% endblock %}

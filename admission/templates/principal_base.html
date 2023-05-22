@@ -1,0 +1,20 @@
+{% extends 'simple_base.html' %}
+
+{% block sidebar %}
+
+{% block sidebar-extra %}
+{% endblock %}
+
+<li class="nav-item text-center" onclick="highlighting(this)">
+    <a class="nav-link collapsed " href="{% url 'view_report'%}">
+        <i class="bi bi-file-earmark-spreadsheet"></i>
+        <span>Seat Count</span>
+    </a>
+</li>
+<li class="nav-item text-center" onclick="highlighting(this)">
+    <a class="nav-link collapsed " href="{% url 'archived_data'%}">
+        <i class="bi bi-journal-text"></i>
+        <span>Archived Data</span>
+    </a>
+</li>
+{% endblock %}

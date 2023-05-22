@@ -1,0 +1,86 @@
+
+{% extends 'simple_base.html' %}
+{% load static %}
+
+{% block title %} Edit Panel {% endblock %}
+
+{% block content %}
+<main id="main" class="main">
+  <section class="section">
+    <div class="row">
+      <div class="col-lg-8 ">
+
+        <div class="card">
+          <div class="card-body">
+            <div class="modal-content">
+              <div class="modal-header">
+                  <h5 class="modal-title" id="title_heading">Edit Panel</h5>
+                  <!-- <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> -->
+              </div>
+              <div class="modal-body mx-2">
+                  <form action="" method="POST">
+                      {% csrf_token %}
+                      <div class="container"> 
+                          <input type="" name="interview_id" hidden="true" value="{{e_panel.interview_id}}" readonly>
+                          <div class="mb-2 form-floating">
+                              <input type="text" class="form-control" name="panel_id" value="{{ e_panel.panel_id }}" readonly>
+                              <label for="panelID">Panel Name</label>
+                          </div>
+                          <div class="mb-2">
+                              <label for="course_select">Courses handled</label>
+                               <select name="course_select" id="course_select" class="form-control" multiple multiselect-search="true" multiselect-select-all="true" multiselect-max-items="3">
+                                  {% for course in courses %}
+                                          {% if course in course_handled %}
+                                              <option value="{{course}}" selected>{{course}}</option>
+                                          {% else %}
+                                              <option value="{{course}}">{{course}}</option>
+                                          {% endif %}
+                                  {% endfor %}
+                            </select>
+                          </div>
+                          <fieldset class="border p-2 mb-2">
+                              <legend style="font-size: 1rem; line-height: 1.5;" for="" class="float-none w-auto">Choose
+                                  the Panel Type</legend>
+                              <label class="me-2"><input id="sp" type="radio" name="panel_type"
+                                      value="SP" {% if e_panel.panel_type == 'SP' %} checked {% endif %}> Scrutning Pending</label>
+                              <label><input id="sc" type="radio" name="panel_type"
+                                      value="SC"  {% if e_panel.panel_type == 'SC' %} checked {% endif %}>Scrutning Completed</label>
+                          </fieldset>
+  
+                          <div class="mb-2">
+                              <label for="Interviewer_select">Interviewers</label>
+                              <select name="Interviewer_select" id="Interviewer_select" class="form-control" multiple multiselect-search="true" multiselect-select-all="true" multiselect-max-items="3" onselect="checkSel(this);">
+                                  {% for interviewer in  interviewers%}
+                                    {% if interviewer in interviewers_assigned %}
+                                      <option value="{{interviewer}}" selected>{{interviewer}}  ({{interviewer.user_type}})</option>
+                                    {% else %}
+                                      <option value="{{interviewer}}">{{interviewer}}  ({{interviewer.user_type}})</option>
+                                    {% endif %}  
+                                  {% endfor %}
+                              </select>
+                              
+                          </div>
+  
+                      </div>
+                      <div class="modal-footer">
+                        <a href="{% url 'panel' %}?interview_id={{e_panel.interview_id}}" style="text-decoration: none; text-align: center;"> <button type="button" class="btn btn-secondary" style="margin-right:5px;" data-bs-dismiss="modal">Close</button></a>
+                        <button type="submit" class="btn btn-primary">Save changes</button>
+                      </div>
+                  </form>
+              </div>
+          </div>
+
+          </div>
+        </div>
+
+      </div>
+
+  
+    </div>
+  </section>
+  
+</main>
+{% endblock %}
+
+
+

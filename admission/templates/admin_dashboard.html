@@ -1,0 +1,251 @@
+{% extends 'admin_base.html'%}
+<!--Title-->
+{% block title %} Admin Dashboard {% endblock %}    
+<!--End-Title-->
+
+<!--Main-->
+{% block content %}
+<style>
+
+  .int-active,.int-inactive,.int-disabled{
+    width:10px;
+    height:10px;
+    position:absolute;
+    border-radius:100px;
+    left:65px;top:40px;
+  }
+  .int-active{
+    background-color: green;
+  }
+  .int-inactive{
+    background-color: yellow;
+  }
+  .int-disabled{
+    background-color: red;
+  }
+
+</style>
+  <main id="main" class="main">
+
+    <div class="pagetitle">
+      <h1>Dashboard</h1>
+      <nav>
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item"><a href="{% url 'index' %}">Home</a></li>
+          <li class="breadcrumb-item active">Dashboard</li>
+        </ol>
+      </nav>
+
+      <div class="col-lg-1 col md-1 col sx-1">
+        <button class="btn btn-primary mx-auto" data-toggle="modal" data-target="#popup_interview"><span class="material-symbols-outlined" style="font-size:25px;">   add </span></h5></button>
+      </div>  
+    </div><!-- End Page Title -->
+
+    <section class="section dashboard">
+      <div class="row">
+
+        <!-- Left side columns -->
+        <div class="col-lg-12">
+          <div class="row">
+            {% for interview in interviews %}
+            <!-- addedd for loop -->
+              <!-- interview Card -->
+              <div class="col-xxl-4 col-md-4" >
+                <div class="card info-card sales-card">
+
+                  <div class="filter" style="width:50px;right:7px;display:flex;align-items:center;justify-content:center">
+                    <a class="icon" data-bs-toggle="dropdown" style="width:100%;padding:5px">
+                      <i class="bi bi-three-dots fa-2x" style="width:100%;display:flex;align-items:center;justify-content:center;position: absolute; top:0; right:0"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+                      <!-- <li style="width:50px"><button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#interview_status">Change Status</button></li> -->
+                      <li style="display:flex; align-items:center;justify-content:center">
+                        <a class="dropdown-item" style="display:flex;align-items:center;justify-content:center;"><button onclick="change_status(this);" interview_id="{{interview.interview_id}}" data-bs-toggle="modal" data-bs-target="#interview_status" style=" border:none;background-color:transparent">Change Status</button></a>
+                      </li>
+                    </ul>
+                  </div>
+                  <!-- interview_status -->
+                  <a href="{% url 'panel' %}?interview_id={{interview.interview_id}}" style="text-decoration: none; text-align: center;"> 
+                    <div class="card-body" data-toggle="modal">
+                      <div class="card-title">
+                        <span class="int-{{interview.status}}"></span>
+                        <h5 class="card-title">
+                          {{interview.interview_id}}</h5>
+
+                      </div>
+                      
+
+                    <div class="d-flex align-items-center">
+                      <div class="card-icon rounded-circle d-flex align-items-center justify-content-center text">
+                        <i class="bi bi-people-fill"></i>
+                      </div>
+                      <div class="ps-3">
+                        <h6 style="display: inline-block">{{interview.panel_count}}</h6><span class="text-muted small pt-2 ps-1">panels</span>
+                        <span class="text-success small pt-1">{{interview.date}}</span> <span class="text-muted small pt-2 ps-1"></span>
+                      </div>
+                    </div>
+                    
+                  </div></a>
+
+                </div>
+              </div>
+              
+              <!-- End interview Card-->
+              <div class="modal fade" id="interview_status" tabindex="-1" aria-labelledby="interview_status" aria-hidden="true">
+                <div class="modal-dialog">
+                      <div class="modal-content">
+                          <div class="modal-header">
+                              <h5 class="modal-title" id="exampleModalLabel">Change Status</h5>
+                              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <div class="modal-body">
+                              <form action="/delete_panel" method="post">
+                                  {% csrf_token %}
+                                  <h6 ><i class="bi bi-exclamation-triangle" style="margin-right:5px ; color:red"> </i>  Change the Interview Status.</h6>
+                                  <input type="hidden" name="panel_id" id="modal_panel">
+              
+              
+                          </div>
+                          <div class="modal-footer">
+                              <form action="" method="post">
+                              <!-- <a href="{% url 'int_status_active' %}"> -->
+                              <input type="hidden" id="interview_id" name="interview_id">
+                              <button type="button" class="btn btn-success" id="activebtn" data-bs-dismiss="modal" onclick="active();">Active</button></a>
+                              
+
+                              <button type="button" class="btn btn-warning" data-bs-dismiss="modal" onclick="inactive();">Inactive</button>
+                              <button type="button" class="btn btn-danger" data-bs-dismiss="modal" onclick="closed();" >Closed</button>
+                              <!-- <button type="submit" class="btn btn-primary btn-danger" name="delete-panel">Delete</button> -->
+                              </form>
+                          </div>
+              
+                      </div>
+                </div>
+              </div>
+              
+            
+              {% endfor %}
+            
+             
+          </div>
+        </div><!-- End Left side columns -->
+
+        <!-- Right side columns -->
+      
+      </div>
+    </section>
+
+  </main><!-- End #main -->
+  
+<!-- popup model view -->
+
+<div class="modal fade" id="popup_interview" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Interview Details</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+
+        <form method="POST">
+          {% csrf_token %}
+          <div class="form-group">
+            <label for="exampleInputEmail1">Interview Name</label>
+            <input type="text" class="form-control" id="Interview_name" name="interview_id" placeholder="Enter Interview Name" required>
+          </div>
+          <div class="form-group">
+            <label for="interview_date">Interview Date</label>
+            <input type="date" class="form-control" name="date" id="interview_date" required>
+          </div>
+          
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Create Interview</button>
+          </div>
+          
+        </form>
+        
+      </div>
+      
+    </div>
+  </div>
+</div>
+
+<!-- End popup model view -->
+
+<script>
+  function change_status(data){
+
+    var int_id = data.getAttribute("interview_id");
+
+    var interviewID = document.getElementById("interview_id");
+
+    interviewID.value = int_id;
+
+    console.log(int_id);
+  }
+
+  function req(){
+    window.location.href = '/';
+  }
+
+
+function active(){
+
+    var interviewID = document.getElementById("interview_id").value;
+    console.log(interviewID);
+
+    $.ajax({
+      url: "int_status_active",
+      type: "POST",
+      data: {
+          csrfmiddlewaretoken: "{{ csrf_token }}",
+          interview_id: interviewID,
+      },
+      success: req
+  });
+       
+
+}
+function inactive(){
+
+    var interviewID = document.getElementById("interview_id").value;
+    console.log(interviewID);
+
+    $.ajax({
+      url: "int_status_inactive",
+      type: "POST",
+      data: {
+          csrfmiddlewaretoken: "{{ csrf_token }}",
+          interview_id: interviewID,
+      },
+      success: req
+  });
+       
+
+}
+function closed(){
+
+    var interviewID = document.getElementById("interview_id").value;
+    console.log(interviewID);
+
+    $.ajax({
+      url: "int_status_disable",
+      type: "POST",
+      data: {
+          csrfmiddlewaretoken: "{{ csrf_token }}",
+          interview_id: interviewID,
+      },
+      success: req
+  });
+       
+
+}
+</script>
+
+{% endblock %}
+<!--End-Main-->

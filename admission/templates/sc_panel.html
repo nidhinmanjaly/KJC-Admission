@@ -1,0 +1,436 @@
+{% extends 'panel_base.html' %}
+{% load static %}
+
+{% block title %} SP Panel {% endblock %}
+
+{% block left-panel %}
+    <div class="card mt-2 rounded-0" style="position: sticky; top: 10%;">
+        <div class="card-header">
+            <h5><b>Pending Candidates</b></h5>
+        </div>
+        <div class="card-body p-1">
+    
+            <select class="custom-select form-select mt-2" size="16" aria-label="size 3 select example" required>
+                {% for applicant in pending_applicants %}
+                <option onclick="copyText(this);" ondblclick="doubleClick(this);" data-url="/view_application/" value="{{applicant.application_number}}">{{applicant.application_number}}</option>
+                <!-- ({{applicant.applied_program}}) -->
+                {% endfor %}
+    
+            </select>
+    
+            <span class="tooltiptext d-none text-center text-success" id="mytooltip">Application Number Copied</span>
+    
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    
+    {% if application_details %}
+        <!--Absent Modal -->
+        <div class="modal fade" id="absentModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <input type="text" value="true" id="flag123" readonly hidden> <!--DO NOT DELETE-->
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Confirmation!</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Kindly choose the below option as per the status of the candidate.
+                    </div>
+                    <div class="modal-footer">
+                        <form method="POST">
+                            {% csrf_token %}
+                            <input type="text" name="application_number" value="{{ application_details.application_number }}" hidden readonly>
+                            <input type="text" name="reviewer_id" value="{{ request.user }}" hidden readonly>
+                            <button type="submit" name="back-to-queue-btn" value="true" class="btn btn-warning">Back to Queue</button>
+                            <button type="submit" name="absent-btn" value="true" class="btn btn-danger">Mark Absent</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="card shadow mt-2 rounded-0">
+            <div class="card-header card-custom" style="position: sticky; top: 60px;" >
+                <div class="d-flex justify-content-between align-items-center">
+
+                    <h4 class="fw-bold">{{ application_details.application_number }}</h4>
+                    <h4 class="fw-bold">{{application_details.first_name}} {% if application_details.middle_name %}{{application_details.middle_name}}{% endif %} {% if application_details.last_name %}{{application_details.last_name}}{% endif %}</h4>
+
+                </div>
+                <div class="d-flex justify-content-between align-items-center border-top ">
+                    <h5 class="fw-bold pt-1">{{ application_details.applied_program }}</h5>
+                    <h5><i class="fa-solid fa-clock me-2"></i><span id="timer" class="float-end fs-5 text-white">00:00</span></h5>
+                </div>
+                
+                
+            </div>
+
+            <div class="card-body p-0 mt-3">
+                <div class="container-fluid">
+
+
+
+                    <div class="row mb-2">
+
+                        <div class="col-12">
+                            <p>PERSONAL DETAILS</p>
+                        </div>
+
+                        <div class="col-md-6 d-flex">
+                            <h6 class="pe-3">DOB: <b class="fs-5">{{ application_details.dob }}</b></h6>
+
+
+                        </div>
+                        <div class="col-md-6 d-flex">
+                            <h6 class="pe-3">State of Study: <b class="fs-5"> {{ application_details.state_of_board }}</b> </h6>
+
+
+                        </div>
+                    </div>
+
+                    <div class="row mb-2">
+
+                        <div class="col-12">
+                            <p>COURSE DETAILS</p>
+                        </div>
+
+
+                        <div class="col-12">
+                            <table class="table">
+                                <tr>
+                                    <td>
+                                        <h6>Course Opted:</h6>
+                                    </td>
+                                    <td><b class="fs-5">{{ application_details.applied_program }}</b></td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <h6>Subjects Studied:</h6>
+                                    </td>
+                                    <td><b class="fs-5">{{application_details.qualification_details.title }}</b> </td>
+                                </tr>
+                            </table>
+                        </div>
+
+
+
+                    </div>
+
+                    <div class="row">
+
+                        <div class="col-12">
+                            <p>ACADEMIC DETAILS</p>
+                        </div>
+
+                        <div class="col-md-12">
+                            <table class="table table-bordered">
+                                <tr>
+                                    <td>
+                                        <h6>(X) YOP : <b class="fs-5">{{ application_details.tenth_year }}</b></h6>
+                                        <h6>(X) % : <b class="fs-5">{{ application_details.tenth_percentage }}</b></h6>
+                                    </td>
+                                    <td>
+                                        <h6>(XII) YOP : <b class="fs-5">{% if not application_details.course_category == 'PG' %} {{ application_details.year_of_passing }} {% else %} {{ application_details.twelfth_year }} {% endif %}</b></h6>
+                                        <h6>(XII) % : <b class="fs-5">{% if not application_details.course_category == 'PG' %} {{ application_details.aggregrate_percentage_including_language_for_UG }} {% else %} {{ application_details.twelfth_percentage }} {% endif %}</b></h6>
+                                    </td>
+                                    <td>
+                                        <h6>(UG) YOP : <b class="fs-5">{% if application_details.course_category == 'PG' %}{{ application_details.year_of_passing }}{% endif %}</b></h6>
+                                        <h6>(UG) % : <b class="fs-5">{% if application_details.course_category == 'PG' %}{{ application_details.aggregrate_percentage_including_language_for_PG }}{% endif %}</b></h6>
+                                        
+                                    </td>
+                                    
+                                </tr>
+                                <tr>
+                                    <td colspan="2">
+                                        <h6>Year Gap for UG Applicants: <b class="fs-5">{{year_gap }}</b> </h6>
+                                    </td>
+                                    <td colspan="2">
+                                        <h6>Qly. Exm. Result : {{ application_details.result_status }}</h6>
+                                    </td>
+                                    
+                                </tr>
+                                <tr>
+                                    <td colspan="3">
+                                        <h6>Name of institution: <b class="fs-5">{{application_details.name_of_institution}}</b></h6>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2">
+                                        <h6>Board / University: <b class="fs-5">{{application_details.other_board_or_university}}</b></h6>
+                                    </td>
+                                    <td colspan="2">
+                                        <h6>(UG) Prog. : <b class="fs-5">{{ application_details.qualifying_exam }}</b></h6>
+                                    </td>
+
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="row">
+
+                        <div class="col-md-12">
+                            <p>REMARKS </p>
+                        </div>
+
+                    </div>
+
+                    <table class="table table-bordered">
+                        <form action="" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" value="{{request.user}}" name="reviewer_id">
+                            <tr>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md-12 d-flex flex-md-row">
+                                            <b>Mode of Education<span class="text-danger">*</span>: </b>
+                                            <div class="form-check form-check-inline ms-3">
+                                                <input class="form-check-input" type="radio" name="mode_education"
+                                                    id="inlineRadio1" value="Distance" {% if form_data.mode_of_education == 'Distance' %} checked {% endif %} required>
+                                                <label class="form-check-label" for="inlineRadio1">Distance</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" name="mode_education"
+                                                    id="inlineRadio2" value="Regular" {% if form_data.mode_of_education == 'Regular' %} checked {% endif %}>
+                                                <label class="form-check-label" for="inlineRadio2">Regular</label>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </td>
+
+                            </tr>
+
+                            <tr>
+                                <td>
+                                    <div class="row g-1">
+                                        <div class="col-md-2">
+                                            <b class="me-3">Sec.Lang.:<span class="text-danger"></span></b>
+                                        </div>
+                                        <div class="col-md-10">
+                                            <!-- <input type="text" name="second_lang" class="form-control"
+                                                placeholder="Studied for Qualifying Exam" {% if form_data %} value="{{form_data.second_language}}" {% endif %}> -->
+                                                <!-- <select class="form-select" name="second_lang" {% if form_data %} value="{{form_data.second_language}}" {% endif %}>
+                                                    <option value="" selected disabled hidden>Studied for Qualifying Exam</option>
+                                                    <option value="hindi">Hindi</option>
+                                                    <option value="kannada">Kannada</option>
+                                                    <option value="others">Others</option>
+                                                    <option value="no Second Language">NO Second Language</option>
+
+        
+                                                </select>   -->
+                                                <select class="form-select" name="second_lang">
+                                                    <option value="" {% if not form_data %} selected {% endif %}>--Sec.Lang Studied for Qualifying Exam--</option>
+                                                    <option value="hindi" {% if form_data.second_language == 'hindi' %} selected {% endif %}>Hindi</option>
+                                                    <option value="kannada" {% if form_data.second_language == 'kannada' %} selected {% endif %}>Kannada</option>
+                                                    <option value="others" {% if form_data.second_language == 'others' %} selected {% endif %}>Others</option>
+                                                    <option value="no Second Language" {% if form_data.second_language == 'no Second Language' %} selected {% endif %}> NO Second Language</option>
+
+        
+                                                </select> 
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>
+                                    <div class="row g-3">
+
+
+                                        <div class="col-md-4">
+                                            <b> Co-Curr./Extra-Curr. Participations:</b>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <textarea class="form-control w-100 " placeholder="" name="activity"
+                                                style="height: 5vh">{% if form_data %} {{ form_data.cocurricular_activities }} {% endif %}</textarea>
+                                        </div>
+                                    </div>
+                                </td>
+
+                            </tr>
+
+                            <tr>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md-4 col-sm-12 my-2">
+                                            <label for="subKnow"><b>Subject Knowledge</b></label>
+                                            <select class="form-select" id="subKnow" name="sub_knowledge">
+                                                <option value="0" {% if not form_data.subject_knowledge %} selected {% endif %}>--Select--</option>
+                                                <option value="poor" {% if form_data.subject_knowledge == 'poor' %} selected {% endif %}>Poor</option>
+                                                <option value="average" {% if form_data.subject_knowledge == 'average' %} selected {% endif %}>Average</option>
+                                                <option value="good" {% if form_data.subject_knowledge == 'good' %} selected {% endif %}>Good</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4 col-sm-12 my-2">
+                                            <label for="comm"><b>Attitude<span class="text-danger">*</span></b></label>
+                                            <select class="form-select" id="attitude" name="attitude" required>
+                                                <option value="" {% if not form_data.attitude %} selected {% endif %}>--Select--</option>
+                                                <option value="poor" {% if form_data.attitude == 'poor' %} selected {% endif %}>Poor</option>
+                                                <option value="average" {% if form_data.attitude == 'average' %} selected {% endif %}>Average</option>
+                                                <option value="good" {% if form_data.attitude == 'good' %} selected {% endif %}>Good</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4 col-sm-12 my-2">
+                                            <label for="comm"><b>Communication<span class="text-danger">*</span></b></label>
+                                            <select class="form-select" id="comm" name="communication" required>
+                                                <option value="" {% if not form_data.communication %} selected {% endif %}>--Select--</option>
+                                                <option value="poor" {% if form_data.communication == 'poor' %} selected {% endif %}>Poor</option>
+                                                <option value="average" {% if form_data.communication == 'average' %} selected {% endif %}>Average</option>
+                                                <option value="good" {% if form_data.communication == 'good' %} selected {% endif %}>Good</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-center">
+
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md-12 d-flex">
+                                            <b class="me-3">Remarks<span class="text-danger">*</span></b>
+                                            <textarea class="form-control" placeholder="Describe the applicants characteristics"
+                                                name="remarks" style="height: 5vh" required>{% if form_data %} {{ form_data.remarks }} {% endif %}</textarea>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md-12 d-flex">
+                                            <b class="me-3">Notes for Admission Office</b>
+                                            <textarea class="form-control"
+                                                placeholder="Discrepancies in the applicant data (if found) mention here " style="height: 5vh" name="notes_for_admission_office">{% if form_data %} {{ form_data.notes_for_admission_office }} {% endif %}</textarea>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>
+                                    <div class="row">
+
+
+                                        <div class="col-md-6 d-flex align-items-center">
+                                            <b>Interview Score <span class="text-danger">*</span> &nbsp; </b>
+                                            <select name="interview_score" id="dd1" class="form-select" required>
+
+                                                <option value="" selected>Select the score</option>
+                                                <option value="1" {% if form_data.interview_score == 1 %} selected {% endif %}>1 -- Not Recommended</option>
+                                                <option value="2" {% if form_data.interview_score == 2 %} selected {% endif %}>2 -- Not Recommended</option>
+                                                <option value="3" {% if form_data.interview_score == 3 %} selected {% endif %}>3 -- Not Recommended</option>
+                                                <option value="4" {% if form_data.interview_score == 4 %} selected {% endif %}>4 -- Can be Considered</option>
+                                                <option value="5" {% if form_data.interview_score == 5 %} selected {% endif %}>5 -- Can be Considered</option>
+                                                <option value="6" {% if form_data.interview_score == 6 %} selected {% endif %}>6 -- Recommended</option>
+                                                <option value="7" {% if form_data.interview_score == 7 %} selected {% endif %}>7 -- Recommended</option>
+                                                <option value="8" {% if form_data.interview_score == 8 %} selected {% endif %}>8 -- Highly Recommended</option>
+                                                <option value="9" {% if form_data.interview_score == 9 %} selected {% endif %}>9 -- Highly Recommended</option>
+                                                <option value="10" {% if form_data.interview_score == 10  %} selected {% endif %}>10 -- Highly Recommended</option>
+
+                                            </select>
+                                            
+                                        </div>
+
+                                        <div class="col-md-6 d-flex align-items-center">
+                                            
+                                            <b>Activity Score &nbsp;  </b>
+                                            <select name="activity_score" id="myDropdown2" class="form-select" id="">
+                                                <option value="0" {% if not form_data.activity_score %} selected {% endif %}>Select the Score</option>
+                                                <option value="1" class="text-danger" {% if form_data.activity_score == 1 %} selected {% endif %}>1 -- Not Recommended</option>
+                                                <option value="2" class="text-danger" {% if form_data.activity_score == 2 %} selected {% endif %}>2 -- Not Recommended</option>
+                                                <option value="3" class="text-danger" {% if form_data.activity_score == 3 %} selected {% endif %}>3 -- Not Recommended</option>
+                                                <option value="4" class="text-warning" {% if form_data.activity_score == 4 %} selected {% endif %}>4 -- Can be Considered</option>
+                                                <option value="5" class="text-warning" {% if form_data.activity_score == 5 %} selected {% endif %}>5 -- Can be Considered</option>
+                                                <option value="6" class="text-success" {% if form_data.activity_score == 6 %} selected {% endif %}>6 -- Recommended
+                                                <option value="7" class="text-success" {% if form_data.activity_score == 7 %} selected {% endif %}>7 -- Recommended
+                                                <option value="8" class="text-success" {% if form_data.activity_score == 8 %} selected {% endif %}>8 -- Highly Recommended</span></option>
+                                                <option value="9" class="text-success" {% if form_data.activity_score == 9 %} selected {% endif %}>9 -- Highly Recommended</option>
+                                                <option value="10" class="text-success" {% if form_data.activity_score == 10 %} selected {% endif %}>10 -- Highly Recommended </option>
+                                            </select>
+
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                    </table>
+
+                </div>
+
+
+            </div>
+
+
+
+            <div class="card-footer">
+                <div class="float-end">
+                    <button class="btn btn-success rounded-0" type="submit" name="complete-btn" value="true" >Completed</button>
+                    <button class="btn btn-danger rounded-0" data-bs-toggle="modal"
+                        data-bs-target="#absentModal">Absent/BackToQueue</button>
+                </div>
+            </div>
+            </form>
+        </div>
+
+        <script>
+            document.getElementById("myDropdown1").selectedIndex = -1;
+        </script>
+
+    {% else %}
+    <div class="alert alert-success mt-2" role="alert">
+        <input type="text" value="false" id="flag123" readonly hidden> <!--DO NOT DELETE-->
+        <h4 class="alert-heading">Action Required!</h4>
+        <p>The candidates are queued to the panel. The application numbers are displayed on your left side.</p>
+        <hr class="border-secondary">
+        <p class="mb-0">Select the application number and proceed to load the data into the panel.</p>
+    </div>
+    {% endif %}
+
+{% endblock %}
+
+{% block right-panel %}
+    <div class="card mt-2 rounded-0" style="position: sticky; top: 10%;">
+        <div class="card-header">
+            <h5><b>Completed Candidates</b></h5>
+        </div>
+
+        <div class="card-body p-1">
+
+            <select class="custom-select form-select mt-2" size="16" aria-label="size 3 select example" required>
+
+                    {% for applicant in completed_applicants %}
+                    <option
+                        class="{% if applicant.interview_status_f1 == 'ABSENT' or applicant.interview_status_f2 == 'ABSENT' or applicant.interview_status_f3 == 'ABSENT' %}text-danger{% endif %}{% if applicant.interview_status_f1 == 'COMPLETE' or applicant.interview_status_f2 == 'COMPLETE' or applicant.interview_status_f3 == 'COMPLETE' %}text-success{% endif %}"
+                        onclick="copyText(this);" ondblclick="doubleClick(this);"
+                        data-url="/loadApplicant/" value="{{applicant.application_number}}">{{applicant.application_number}}</option>
+                    {% endfor %}
+
+                </select>
+            </form>
+        </div>
+
+        <div class="card-footer">
+            <div class="d-flex ">
+                <h6 style="color:red">●</h6>
+                <h6 style="padding-left: 10px; font-size: 15px;">Absent</h6>
+            </div>
+            <div class="d-flex ">
+                <h6 style="color:green">●</h6>
+                <h6 style="padding-left: 10px; font-size: 15px;">Completed</h6>
+            </div>
+            
+        </div>
+
+        <div>
+            
+        </div>
+
+    </div>
+{% endblock %}

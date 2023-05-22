@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>403 Forbidden</title>
+		<style>
+			body {
+				background-size: 9%;
+				background-image: url("../static/assets/error\ 403.gif");
+				background-repeat: repeat;
+				margin: 0;
+				padding: 0;
+			}
+
+			.cus-sec {
+				height: 100vh;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				background-color: white;
+				opacity: 0.5;
+			}
+			#errorText {
+				top: 25vh;
+				text-align: center;
+				font-family: Verdana, Geneva, Tahoma, sans-serif;
+				font-size: 5rem;
+				color: black;
+				font-weight: 700;
+			}
+            #x{
+                opacity: 5;
+            }
+			.btn {
+                opacity: 0;
+				-webkit-border-radius: 60;
+				-moz-border-radius: 60;
+				border-radius: 60px;
+				font-family: Arial;
+				color: #ffffff;
+				font-size: 20px;
+				background: #000000;
+				padding: 12px 20px 10px 20px;
+				border: solid #ffffff 2px;
+				text-decoration: none;
+			}
+
+			.btn:hover {
+				background: #0fe800;
+				text-decoration: none;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="cus-sec">
+			<div id="errorText">
+				<h1>
+					Forbidden!
+					<h2 style="margin-top: -120px">Code 403</h2>
+				</h1>
+                <input id="x" class="btn" type="submit" value="TAKE ME BACK!" />
+			</div>
+		</div>
+	</body>
+</html>

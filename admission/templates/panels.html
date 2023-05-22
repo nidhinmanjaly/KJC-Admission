@@ -1,0 +1,485 @@
+{% extends 'admin_base.html' %}
+{% load custom_tags %}
+
+{% block title %} Dashboard {% endblock %}
+<!--End-Title-->
+
+{% block sidebar-extra %}
+
+<li class="nav-item">
+    <a class="nav-link collapsed " href="{% url 'import_data'  interview_id=interview_id %}">
+        <i class="bi bi-menu-button-wide"></i>
+        <span>Import Data</span>
+    </a>
+</li>  
+
+{% endblock %}
+{% block report_options %}
+    <li>
+        <a href="{% url 'score_sheet' interview_id=interview_id %}">
+            <i class="bi bi-circle"></i><span>Interview Report</span>
+        </a>
+    </li>
+{% endblock %}
+<!--Main-->
+{% block content %}
+<!-- Modal Create Panel -->
+<div class="modal fade modal-lg" id="panelModal" tabindex="-1" aria-labelledby="panelModal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="title_heading">Create Panel</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body mx-2">
+                <form action="" method="POST">
+                    {% csrf_token %}
+                    <div class="container">
+                        <input type="" name="interview_id" hidden="true" value="{{interview_id}}" readonly>
+                        <div class="mb-2 form-floating">
+                            <input type="text" class="form-control" id="panelID" name="panel_id"
+                                placeholder="Panel Name" required>
+                            <label for="panelID">Panel Name</label>
+                        </div>
+                        <div class="mb-2">
+                            <label for="course_select">Courses handled</label>
+                            <select name="course_select" id="course_select" class="form-control" multiple
+                                multiselect-search="true" multiselect-select-all="true" multiselect-max-items="3">
+                                {% for course in courses %}
+                                <option value="{{course}}">{{course}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <fieldset class="border p-2 mb-2">
+                            <legend style="font-size: 1rem; line-height: 1.5;" for="" class="float-none w-auto">Choose the Panel Type</legend>
+                            <label class="me-2"><input id="sp" type="radio" name="panel_type" value="SP" required> Scrutning Pending</label>
+                            <label><input id="sc" type="radio" name="panel_type" value="SC">Scrutning Completed</label>
+                        </fieldset>
+
+                        <div class="mb-2">
+                            <label for="Interviewer_select">Interviewers</label>
+                            <select name="Interviewer_select" id="Interviewer_select" class="form-control" multiple multiselect-search="true" multiselect-select-all="false" multiselect-max-items="3" onselect="checkSel(this);" required>
+                                {% for interviewer in interviewers%}
+                                    <option value={{interviewer}}>{{interviewer}} ({{interviewer.user_type}})</option>
+                                {% endfor %}
+                            </select>
+
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal Create Panel -->
+
+<!-- Modal Edit Panel -->
+<!-- <div class="modal fade" id="panelEditModal" tabindex="-1" aria-labelledby="panelEditModal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+
+            </div>
+            <div class="modal-header">
+                <h5 class="modal-title" id="title_heading">Edit Panel</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body mx-2">
+                <form action="" method="POST">
+                    {% csrf_token %}
+                    <div class="container">
+                        <input type="" name="interview_id" hidden="true" value="{{interview_id}}" readonly>
+                        <div class="mb-2 form-floating">
+                            <input type="text" class="form-control" id="panelID" name="panel_id"
+                                placeholder="Panel Name">
+                            <label for="panelID">Panel Name</label>
+                        </div>
+                        <div class="mb-2">
+                            <label for="course_select">Courses handled</label>
+                            <select name="course_select" id="course_select" class="form-control" multiple
+                                multiselect-search="true" multiselect-select-all="true" multiselect-max-items="3">
+                                {% for course in courses %}
+                                <option value="{{course}}">{{course}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <fieldset class="border p-2 mb-2">
+                            <legend style="font-size: 1rem; line-height: 1.5;" for="" class="float-none w-auto">Choose
+                                the Panel Type</legend>
+                            <label class="me-2"><input id="sp" type="radio" name="panel_type" value="SP"> Scrutning
+                                Pending</label>
+                            <label><input id="sc" type="radio" name="panel_type" value="SC">Scrutning Completed</label>
+                        </fieldset>
+
+                        <div class="mb-2">
+                            <label for="Interviewer_select">Interviewers</label>
+                            <select name="Interviewer_select" id="Interviewer_select" class="form-control" multiple
+                                multiselect-search="true" multiselect-select-all="true" multiselect-max-items="3"
+                                onselect="checkSel(this);">
+                                {% for interviewer in interviewers%}
+                                <option value={{interviewer}}>{{interviewer}}</option>
+                                {% endfor %}
+                            </select>
+
+                        </div>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div> -->
+<!-- Modal Edit Panel -->
+
+<!-- Search Modal -->
+<div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Search Applicants</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <!-- <table class="table">
+                <thead>
+                    <tr>
+                        <td>Application Number</td>
+                        <td>Panel Number</td>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for student in assigned_studs %}
+                    <tr>
+                        <td>{{student.token_no}}</td>
+                        <td>{{student.application_number}}</td>
+                    </tr>
+
+                    {% endfor %}
+                    
+                </tbody>
+            </table> -->
+
+            <table class="table student_details" id="stud_table">
+                <thead>
+                    <tr>
+                        <th>Token No</th>
+                        <th>App No.</th>
+                        <th>Applicant Name</th>
+                        <th>Program</th>
+                        <th>Interview</th>
+                        <th>Panel Type</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for student in assigned_studs %}
+                    <tr>
+                        <td>{{student.token_no}}</td>
+                        <td>{{student.application_number}}</td>
+                        <td>{{student.first_name}} {% if student.middle_name %}{{student.middle_name}}{% endif %} {% if student.last_name %}{{student.last_name}}{% endif %}</td>
+                        <td>{{student.applied_program}}</td>
+                        <td>{% if student.interview_status_f1 is None %} Pending
+                        {% else %} 
+                        {{student.interview_status_f1}}
+                        {% endif %}</td>
+                        <td>{{student.panel_assigned}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+      </div>
+    </div>
+  </div>
+<main id="main" class="main">
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-9">
+                <div class="d-flex justify-content-between">
+                    <h2>{{interview_id}}</h2>
+                 
+                    <div class="mb-4">
+                        <button class="btn bg-gradient btn-primary float-end mx-2" data-bs-toggle="modal"
+                            data-bs-target="#panelModal" title="Create Panel"><i class="fa-solid fa-plus" style="color: #ffffff;"></i>
+                            </button>
+                                <button onclick="change_panel_status('{{interview_id}}', 'False')" class="btn bg-gradient btn-danger float-end mx-2" title="Disable All Panels"><i class="fa-solid fa-xmark" style="color: #ffffff;"></i></button>
+                         
+                                <button onclick="change_panel_status('{{interview_id}}', 'True')" class="btn bg-gradient btn-success float-end mx-2" title="Enable All Panels"><i class="fa-solid fa-check" style="color: #ffffff;"></i></button>
+
+                                <button type="button" class="btn btn-primary mx-2 btn-secondary" data-bs-toggle="modal" data-bs-target="#searchModal" title="Search">
+                                    <i class="fa-solid fa-magnifying-glass"></i>
+                                  </button>
+
+                    </div>
+                </div>
+
+                <div class="d-panels">
+                    {% for panel, panel_details in panel_dict.items %}
+                    <div class="card w-100 mb-4">
+                        <div class="card-header bg-custom">
+                            <div class="d-flex justify-content-between">
+                                <div class="panel-id">
+                                    <h5 id="panelId" class="text-dark fs-bold"><b>{{panel.panel_id}}</b></h5>
+                                </div>
+                                <div class="d-flex">
+                                    <div class="form-check form-switch me-2">
+                                        <input class="form-check-input" type="checkbox" role="switch"
+                                            id="switch{{forloop.counter}}" onchange="toggle(this);" panel="{{panel.panel_id}}" {% if panel.panel_active == True %} checked {% endif %}>
+                                        <label id="foo" class="form-check-label"
+                                            for="switch{{forloop.counter}}">{% if panel.panel_active == True %}Active{% else %}Inactive{% endif %}</label>
+                                    </div>
+                            
+                                    <div class="float-end" data-bs-toggle="collapse" data-bs-target="#card-panel-details{{ forloop.counter }}"
+                                        aria-expanded="false" aria-controls="collapse_user_creataion" style="cursor: pointer;">
+                                            <i class="fa-solid fa-chevron-down "></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="teacher-tag-type d-flex justify-content-between mt-2">
+                                <div class="d-flex teaher-tag">
+                                    <h6><b>Interviewers:</b> {{panel.interviewer1}}{% if panel.interviewer2 %}, {{panel.interviewer2}}{% endif %}{% if panel.interviewer3 %}, {{panel.interviewer3}} {% endif %}</h6>
+
+                                </div>
+                                <div class="type">
+                                    <h6>Panel Type: {{panel.panel_type}} </h6>
+                                </div>
+                            
+                            </div>
+                        </div>
+                        <div class="collapse" id="card-panel-details{{ forloop.counter }}">
+
+                            <div class="card-body">
+
+                                <table class="table student_details" id="stud_table">
+                                    <thead>
+                                        <tr>
+                                            <th>Token No</th>
+                                            <th>App No.</th>
+                                            <th>Applicant Name</th>
+                                            <th>Program</th>
+                                            <th>Interview</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                        {% for student in panel_details.applicants %}
+                                            <tr>
+                                                <td>{{student.token_no}}</td>
+                                                <td>{{student.application_number}}</td>
+                                                <td>{{student.first_name}} {% if student.middle_name %}{{student.middle_name}}{% endif %} {% if student.last_name %}{{student.last_name}}{% endif %}</td>
+                                                <td>{{student.applied_program}}</td>
+                                                <td>{% get_interview_status student panel%}</td>
+                                                    <!-- {% if student.application_remark == 'SP-ABSENT' %} ABSENT {% elif student.interview_status_f1 is None %} Pending {% else %} {{student.interview_status_f1}} {% endif %}</td> -->
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="panel-details">
+                                <div class="alert alert-primary m-2" role="alert">
+                                    <div class="d-flex mb-3">
+                                        <i class="fa-solid fa-circle-info me-2"></i>
+                                        <h5>Panel Information</h5>
+
+                                    </div>
+                                    <table class="w-100">
+                                        
+                                        <!-- <tr class="py-2">
+                                            <th>Panel Type:</th>
+                                            <td></td>
+                                        </tr> -->
+                                        <tr class="py-2">
+                                            <th>Course Handled:</th>
+                                            <td>
+                                                {% if panel.course_handled|wordcount > 10  %}
+                                                <div class="less-content">{{ panel.course_handled|safe|linebreaks|truncatewords:10 }} <a href="javascript:void(0);" class="expand-btn" >Read More</a></div>
+                                                <div class="more-content d-none">{{ panel.course_handled|safe|linebreaks }} <a href="javascript:void(0);" class="collapse-btn">Read Less</a></div> 
+                                                {% endif %}
+                                                </a>
+
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                                <!-- PANEL STATUS TOGGLE BUTTON -->
+                                <div class="panel-options float-end my-3 me-2 d-flex">
+                                    
+
+                                    <a href="{% url 'edit_panel' panel.panel_id %}"><button class="btn btn-success ml-2" style="margin-right:5px;"><i class="fa-solid fa-pen-to-square "></i>Edit</button></a>
+                                    <button class="btn btn-danger panel-delete-btn" data-bs-toggle="modal" data-bs-target="#delete_panel" value="{{panel.panel_id}}/{{interview_id}}"><i class="fa-solid fa-trash me-2"></i>Delete</button>
+
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="card-footer bg-light">
+                            <div class="details">
+                                {% panel_count panel as counts %}
+                                <h6 class="text-success">Students in Panel: {{ counts.total }} | {% if not panel.panel_type == 'SP' %}Completed: {{ counts.complete }} |{% endif %} Absent: {{ counts.absent }} | Pending: {{ counts.pending }} </h6>
+                            </div>
+
+                        </div>
+
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <form method="POST" action="{% url 'assign_panel' %}">
+                    {% csrf_token %}
+                    <input type="" name="interview_id" hidden="true" value="{{interview_id}}" readonly>
+                    <div class="card mb-4">
+                        <div class="card-header bg-blue text-center">
+                            <h5>Enter the Student Details</h5>
+                        </div>
+                        <div class="card-body">
+                            <textarea class="form-control" name="attendee_list"
+                                placeholder="Enter the App number here....." style="height: 50vh"></textarea>
+                        </div>
+                        <div class="card-footer">
+                            <button type="submit" class="btn btn-success w-100">Allocate</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- PANEL_DELETE_MODAL -->
+    <div class="modal fade" id="delete_panel" tabindex="-1" aria-labelledby="delete_panel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Delete Panel?</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="{% url 'delete_panel'%}" method="post">
+                        {% csrf_token %}
+                        <h6 >Are you sure you want to delete this panel? <br> <i class="bi bi-exclamation-triangle" style="margin-right:5px ; color:red"> </i>This action cannot be undone!</h6>
+                        <input type="hidden" name="panel_id" id="delete_panel_id">
+                        <input type="hidden" name="interview_id" id="delete_panel_interview_id">
+    
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary btn-danger" name="delete-panel">Confirm Delete</button>
+                    </form>
+                </div>
+    
+            </div>
+        </div>
+    </div>
+
+</main>
+
+
+<script>
+
+    $(document).ready(function () {
+        $('.table').DataTable();
+
+        $(".expand-btn").click(function () {
+            // var id = $(this).data("id");
+            $(".less-content").addClass("d-none");//hide/show..
+            $(".more-content").removeClass("d-none");
+        });
+        $(".collapse-btn").click(function () {
+            // console.log("hello");
+            // var id = $(this).data("id");
+            $(".less-content").removeClass("d-none");//hide/show..
+            $(".more-content").addClass("d-none");
+        });
+    });
+
+
+    function toggle(data) {
+        // console.log("State changed");
+        var lab_id = data.getAttribute("id");
+        var flag;
+        var panel_id = data.getAttribute("panel");
+        var label = document.querySelector(`label[for=${lab_id}`);
+
+        // console.log(label);
+
+
+        if (data.checked) {
+            flag = true;
+            label.innerHTML = "Active";
+        }
+        else {
+            label.innerHTML = "Inactive";
+
+            flag = false;
+        }
+
+        $.ajax({
+            url: "panelToggle",
+            type: "POST",
+            data: {
+                csrfmiddlewaretoken: "{{ csrf_token }}",
+                panel_id: panel_id,
+                status: flag
+            },
+            success: null
+        });
+    }
+
+    function change_panel_status(interview_id, status, panel_id = null) {
+        data = {
+            csrfmiddlewaretoken: "{{ csrf_token }}",
+            interview_id: interview_id,
+            status: status,
+            panel_id: panel_id
+        }
+        $.ajax({
+            type: 'POST',
+            url: 'change_panel_status',
+            data: data,
+            success: location.reload()
+        })
+    }
+
+    $('.panel-delete-btn').on('click', function () {
+
+        var data = $(this).val().split('/');
+        // returns [panel_id, interview_id]
+        // console.log(data[0])
+
+        $('#delete_panel_id').val(data[0]);
+        $('#delete_panel_interview_id').val(data[1]);
+
+
+    });
+
+</script>
+
+<script src="https://code.jquery.com/jquery-3.5.1.js"></script> 
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script> 
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/dataTables.buttons.min.js"></script> 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script> 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script> 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script> 
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.html5.min.js"></script> 
+<script src="https://cdn.datatables.net/buttons/2.3.6/js/buttons.print.min.js"></script> 
+
+<link rel="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+<link rel="https://cdn.datatables.net/buttons/2.3.6/css/buttons.dataTables.min.css">
+
+
+
+{% endblock %}
